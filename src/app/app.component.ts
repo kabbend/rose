@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { Text, TextRow, Document, Section } from './store/document.model';
 
-import { InputTextModule} from 'primeng/primeng';
+//import { InputTextModule} from 'primeng/primeng';
 import { DragDropModule} from 'primeng/primeng';
 import { Autosize } from './autosize.directive';
 
