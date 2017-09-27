@@ -1,0 +1,87 @@
+
+<div class="ui segment" id="topmenu">
+
+<div class="ui fixed inverted menu">
+    <a class="item"><h3>Home</h3></a>
+    <a class="item"><h3>My Documents</h3></a>
+    <div class="right menu">
+      <div class="item"> <a class="ui button">Log in</a> </div>
+      <div class="item"> <a class="ui primary button">Sign Up</a> </div>
+    </div>
+</div>
+
+</div>
+ 
+ <div class="ui inverted blue segment">
+  <div class="ui grid">
+      	  <div class="two wide column"> <div class="ui label huge">Timeline</div> </div>
+	  <div class="four wide column"> <div class="item"><h2>INFORMATIONS</h2></div></div>
+	  <div class="four wide column"> <div class="item"><h2>NARRATION</h2></div></div>
+	  <div class="four wide column"> <div class="item"><h2>EVENEMENTS</h2></div></div>
+  </div>
+ </div>
+
+<div class="ui divided list">
+ <!-- LIST OF ROWS -->          
+ <div class="item" *ngFor="let row of rows$ | async; let i = index">
+	<!-- GRID WITHIN THE LINE -->
+	<div class="ui divided grid">
+	  <!-- ROW NUMBER -->
+      	  <div class="one wide column">
+		<div class="ui large label">Step<div class="detail">{{i}}</div></div>
+	  </div>
+	  <!-- COL 0 -->
+          <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
+	  </div>
+          	<ng-template #textareaId0 > 
+		  <div class="four wide column">
+        	  	<textarea rosetextarea class="rose-textarea" 
+			autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[0].id,row.line[0].content)" 
+			[(ngModel)]="row.line[0].content"> </textarea>
+		  </div>
+      		</ng-template>
+      		<ng-template #markdownId0 > 
+		   <div class="four wide column">
+        		<markdown class="markdown" 
+        		[data]="row.line[0].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[0],$event)" 
+			(onDragStart)="dragStart($event,row.line[0])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=0;"> </markdown>
+		   </div>
+      		</ng-template>
+	  <!-- COL 1 -->
+          <div *ngIf="currentEdition==i && currentCol==1; then textareaId1 else markdownId1" > 
+	  </div>
+          	<ng-template #textareaId1 > 
+		  <div class="four wide column">
+        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1" 
+			[(ngModel)]="row.line[1].content"> </textarea>
+		  </div>
+      		</ng-template>
+      		<ng-template #markdownId1 > 
+		   <div class="four wide column">
+			<i>
+        		<markdown class="markdown"
+        		[data]="row.line[1].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[1],$event)" 
+			(onDragStart)="dragStart($event,row.line[1])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=1;"> </markdown>
+			</i>
+		   </div>
+      		</ng-template>
+	  <!-- COL 2 -->
+          <div *ngIf="currentEdition==i && currentCol==2; then textareaId2 else markdownId2" > 
+	  </div>
+          	<ng-template #textareaId2 > 
+		  <div class="four wide column">
+        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1" 
+			(keydown.Tab)="addNewRow(i)"
+			[(ngModel)]="row.line[2].content"> </textarea>
+		  </div>
+      		</ng-template>
+      		<ng-template #markdownId2 > 
+		   <div class="four wide column">
+        		<markdown class="markdown"
+        		[data]="row.line[2].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[2],$event)" 
+			(onDragStart)="dragStart($event,row.line[2])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=2;"> </markdown>
+		   </div>
+      		</ng-template>
+	</div> <!-- END OF GRID -->
+    </div> <!-- end of list -->
+</div>

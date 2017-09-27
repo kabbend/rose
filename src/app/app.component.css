@@ -1,0 +1,30 @@
+
+.rose-textarea {
+	font-family:FontAwesome,sans-serif;
+	font-size:16px;
+	resize:none;
+	display:inline-block; 
+	border-radius:6px;
+	width:100%;
+}
+
+.markdown {
+	/*border-style: solid;
+	border-width: 1px;
+	border-color: lightgrey;
+	border-radius:6px;
+	color:black;
+	font-family:FontAwesome,sans-serif;
+	margin:6px;*/
+	display:inline-block; 
+	min-height:100%;
+	width:100%;
+}
+
+
+.rose-textarea:focus {
+	background-color:white;
+	border-color:none;
+}
+
+
