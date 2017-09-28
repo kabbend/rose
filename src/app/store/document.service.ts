@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActionReducer, Action, Store } from '@ngrx/store';
+import { ActionReducer, Action, Store, State, combineReducers } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Http, Headers, Response } from '@angular/http';
@@ -117,10 +117,11 @@ export type DocActions =
  ** REDUCERS
  **/
 
+
 //let initialTextState = [ { id: "1", content: "hello", docId: "1", row: 0, col: 0 } ] ;	
 let initialTextState = [] ;	
 
-export const textReducer : ActionReducer<Text[]>  = (state: Text[] = initialTextState, action: Action) => {
+const textReducer : ActionReducer<Text[]>  = (state: Text[] = initialTextState, action: Action) => {
 
 switch (action.type) {
 
@@ -140,6 +141,16 @@ switch (action.type) {
     default: return state;
   }
 
+}
+
+const reducers = {
+  texts: textReducer
+};
+
+const productionReducer = combineReducers(reducers);
+
+export function reducer(state: any, action: any) {
+    return productionReducer(state, action);
 }
 
 /*

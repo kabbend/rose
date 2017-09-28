@@ -4,9 +4,9 @@ import { FormsModule }   		from '@angular/forms';
 import { BrowserAnimationsModule } 	from '@angular/platform-browser/animations';
 import { HttpModule } 			from '@angular/http';
 
-import { InputTextModule} 	from 'primeng/primeng';
+//import { InputTextModule} 	from 'primeng/primeng';
 import { DragDropModule} 	from 'primeng/primeng';
-import { InputTextareaModule} 	from 'primeng/primeng';
+//import { InputTextareaModule} 	from 'primeng/primeng';
 import { Autosize } 		from './autosize.directive';
 import { MarkdownModule} 	from 'angular2-markdown';
 import { StoreModule } 		from '@ngrx/store';
@@ -14,7 +14,7 @@ import { StoreModule } 		from '@ngrx/store';
 import { AppComponent } from './app.component';
 import { RoseTextarea } from './rose-textarea.directive';
 
-import { DocumentService, textReducer } from './store/document.service';
+import { DocumentService, reducer } from './store/document.service';
 
 @NgModule({
   declarations: [
@@ -26,12 +26,12 @@ import { DocumentService, textReducer } from './store/document.service';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    InputTextModule,
+    //InputTextModule,
     DragDropModule,
-    InputTextareaModule,
+    //InputTextareaModule,
     MarkdownModule,
     HttpModule,
-    StoreModule.provideStore({texts: textReducer})
+    StoreModule.provideStore(reducer)
   ],
   providers: [DocumentService],
   bootstrap: [AppComponent]

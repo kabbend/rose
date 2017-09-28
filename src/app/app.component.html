@@ -27,8 +27,9 @@
 	<!-- GRID WITHIN THE LINE -->
 	<div class="ui divided grid">
 	  <!-- ROW NUMBER -->
-      	  <div class="one wide column">
-		<div class="ui large label">Step<div class="detail">{{i}}</div></div>
+      	  <div class="two wide column">
+		<div class="ui huge label">Step<div class="detail">{{i}}</div></div>
+		<button class="tiny teal ui button" style="position:relative;left:-20px;top:-20px;" (click)="addNewRow(i)" >+</button>
 	  </div>
 	  <!-- COL 0 -->
           <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
