@@ -53,7 +53,7 @@
 	  </div>
           	<ng-template #textareaId1 > 
 		  <div class="four wide column">
-        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1" 
+        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[1].id,row.line[1].content)"
 			[(ngModel)]="row.line[1].content"> </textarea>
 		  </div>
       		</ng-template>
@@ -71,7 +71,7 @@
 	  </div>
           	<ng-template #textareaId2 > 
 		  <div class="four wide column">
-        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1" 
+        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[2].id,row.line[2].content)"
 			(keydown.Tab)="addNewRow(i)"
 			[(ngModel)]="row.line[2].content"> </textarea>
 		  </div>

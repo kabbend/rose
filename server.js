@@ -33,4 +33,58 @@ mongodb.MongoClient.connect(process.env.MONGODB_URI, function (err, database) {
   });
 });
 
+// Generic error handler used by all endpoints.
+function handleError(res, reason, message, code) {
+  console.log("ERROR: " + reason);
+  res.status(code || 500).json({"error": message});
+}
+
+//
+// ENDPOINT TEXTS
+// GET  /api/texts	return all texts
+// POST /api/texts	insert a new text
+// PUT  /api/texts/:id	update text 
+// 
+app.get("/api/texts", function(req, res) {
+  db.collection(TEXTS_COLLECTION).find({}).toArray(function(err, docs) {
+    if (err) {
+      handleError(res, err.message, "Failed to get texts.");
+    } else {
+      res.status(200).json(docs);
+    }
+  });
+});
+
+app.post("/api/texts", function(req, res) {
+  var newText = req.body;
+
+  db.collection(TEXTS_COLLECTION).insertOne(newText, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new text.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
+});
+
+app.put("/api/texts/:id", function(req, res) {
+  var updateDoc = req.body;
+
+  if (!req.body.content) {
+    handleError(res, "Invalid text input", "Must provide a content.", 400);
+  }
+
+  console.log("received put call on texts collection:");
+  console.log(req.params.id);
+  console.log(req.body);
+
+  db.collection(TEXTS_COLLECTION).update({"id":req.params.id}, { $set: updateDoc } , function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update text");
+    } else {
+      res.status(200).json(updateDoc);
+    }
+  });
+});
+
 

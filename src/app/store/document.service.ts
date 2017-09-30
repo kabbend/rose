@@ -8,7 +8,6 @@ import { uuid } from '../util/uuid';
 import { Text, TextRow, Section, Document } from './document.model';
 import { AppStore } from './app.store';
 
-const BASE_TEXT_URL = 'http://localhost:3000/';
 const HEADER = { headers: new Headers({ 'cache': 'false', 'Content-Type': 'application/json' }) };
 
 /**
@@ -200,7 +199,7 @@ export class DocumentService {
   // Initial text load, here on JSON server
   //
   loadAllTexts() {
-    this.http.get('http://localhost:3000/texts', HEADER)
+    this.http.get('/api/texts', HEADER)
 	.map( res => res.json() )
 	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.TEXT_LOAD_ALL, payload: texts } ) } ); 
   }
@@ -222,9 +221,9 @@ export class DocumentService {
     let body3 = `{ "id": "${u3}", "docId": "${docId}", "content": "new", "row": ${row}, "col": 2 }`;
 
     // FIXME with transactional design
-    this.http.post('http://localhost:3000/texts/', body1, HEADER).subscribe(); 
-    this.http.post('http://localhost:3000/texts/', body2, HEADER).subscribe();
-    this.http.post('http://localhost:3000/texts/', body3, HEADER).subscribe();
+    this.http.post('/api/texts/', body1, HEADER).subscribe(); 
+    this.http.post('/api/texts/', body2, HEADER).subscribe();
+    this.http.post('/api/texts/', body3, HEADER).subscribe();
 
     this.store.dispatch( { type: DocActionTypes.DOCUMENT_NEW_EMPTY_ROW, payload: newTexts } ); 
 
@@ -236,7 +235,7 @@ export class DocumentService {
   updateText( id: string, content: string ) {
     let body = `{ "content": ${JSON.stringify(content)} }`;
     console.log(body);
-    this.http.patch(`http://localhost:3000/texts/${id}`, body, HEADER).subscribe(); 
+    this.http.put(`/api/texts/${id}`, body, HEADER).subscribe(); 
     this.store.dispatch( { type: DocActionTypes.TEXT_UPDATE, payload: { id: id, content: content } } ); 
   }
 
