@@ -4,9 +4,7 @@ import { FormsModule }   		from '@angular/forms';
 import { BrowserAnimationsModule } 	from '@angular/platform-browser/animations';
 import { HttpModule } 			from '@angular/http';
 
-//import { InputTextModule} 	from 'primeng/primeng';
 import { DragDropModule} 	from 'primeng/primeng';
-//import { InputTextareaModule} 	from 'primeng/primeng';
 import { Autosize } 		from './autosize.directive';
 import { MarkdownModule} 	from 'angular2-markdown';
 import { StoreModule } 		from '@ngrx/store';
@@ -26,9 +24,7 @@ import { DocumentService, reducer } from './store/document.service';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
-    //InputTextModule,
     DragDropModule,
-    //InputTextareaModule,
     MarkdownModule,
     HttpModule,
     StoreModule.provideStore(reducer)

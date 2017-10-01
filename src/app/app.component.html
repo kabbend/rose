@@ -1,7 +1,6 @@
-
 <div class="ui segment" id="topmenu">
 
-<div class="ui fixed inverted menu">
+<div class="ui fixed inverted violet menu">
     <a class="item"><h3>Home</h3></a>
     <a class="item"><h3>My Documents</h3></a>
     <div class="right menu">
@@ -12,12 +11,12 @@
 
 </div>
  
- <div class="ui inverted blue segment">
+ <div class="ui inverted violet segment">
   <div class="ui grid">
-      	  <div class="two wide column"> <div class="ui label huge">Timeline</div> </div>
-	  <div class="four wide column"> <div class="item"><h2>INFORMATIONS</h2></div></div>
-	  <div class="four wide column"> <div class="item"><h2>NARRATION</h2></div></div>
-	  <div class="four wide column"> <div class="item"><h2>EVENEMENTS</h2></div></div>
+      	  <div class="two wide column"><div class="ui label">Time</div> </div>
+	  <div class="four wide column"> <div class="item"><h3>INFORMATIONS</h3></div></div>
+	  <div class="four wide column"> <div class="item"><h3>NARRATION</h3></div></div>
+	  <div class="four wide column"> <div class="item"><h3>EVENEMENTS</h3></div></div>
   </div>
  </div>
 
@@ -27,11 +26,11 @@
 	<!-- GRID WITHIN THE LINE -->
 	<div class="ui divided grid">
 	  <!-- ROW NUMBER -->
-      	  <div class="two wide column">
+      	  <div class="one wide column">
 		<div class="ui small label">T<div class="detail">{{("00000" + i).slice(-5)}}</div></div>
-		<i (click)="addNewRow(i)" class="teal icon pencil" style="cursor: pointer;" ></i>
-		<i (click)="deleteRow(i)" class="red icon remove" style="cursor: pointer;" ></i>
-		<i class="icon paragraph" style="cursor: pointer;" ></i>
+		<i (click)="addNewRow(i)" class="teal icon pencil" style="cursor: pointer;position:relative;top:-5px;" ></i>
+		<i (click)="deleteRow(i)" class="red icon remove" style="cursor: pointer;position:relative;top:-5px;"></i>
+		<i class="icon paragraph" style="cursor: pointer;position:relative;top:-5px;" ></i>
 	  </div>
 	  <!-- COL 0 -->
           <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
