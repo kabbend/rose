@@ -16,22 +16,24 @@ const HEADER = { headers: new Headers({ 'cache': 'false', 'Content-Type': 'appli
 
 export const DocActionTypes = {
 
+	DOCUMENT_NEW_EMPTY_ROW:		'[Document] newRow',		// payload = { index: number, texts: Text[] }
+	TEXT_LOAD_ALL:			'[Text] loadAll',		// payload = Text[] 
+	TEXT_UPDATE:			'[Text] textUpdate', 		// payload = { id: string, content: string }
+
+	// future use
 	DOCUMENT_LOAD: 			'[Document] load',		// minimal payload = { id }
 
 	DOCUMENT_CREATE: 		'[Document] create',		// minimal payload = { } 
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
 	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
 
-	DOCUMENT_NEW_EMPTY_ROW:		'[Document] newRow',		// minimal payload = Text[]
 	DOCUMENT_DELETE_ROW:		'[Document] deleteRow',		// minimal payload = { id, row }
 
 	SECTION_CREATE: 		'[Section] createSection', 	// minimal payload = { docId, start }
 	SECTION_DELETE:			'[Section] deleteSection',	// minimal payload = id: string
 	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// minimal payload = { id, title }
 
-	TEXT_LOAD_ALL:			'[Text] loadAll',		// minimal payload = Text[] 
 	TEXT_CREATE:			'[Text] textCreate', 		// minimal payload = { docId, row, col }
-	TEXT_UPDATE:			'[Text] textUpdate', 		// minimal payload = { id, content }
 	TEXT_DELETE:			'[Text] textDelete', 		// minimal payload = id: string
 
 }
@@ -44,7 +46,7 @@ export class DocumentDeleteRowAction implements Action {
 
 export class DocumentNewEmptyRowAction implements Action {
   type = DocActionTypes.DOCUMENT_NEW_EMPTY_ROW;
-  constructor(public payload: Text[] ) { }
+  constructor(public payload: { index: number, texts: Text[] } ) { }
 }
 
 export class DocumentUpdateTitleAction implements Action {
@@ -117,16 +119,23 @@ export type DocActions =
  **/
 
 
-//let initialTextState = [ { id: "1", content: "hello", docId: "1", row: 0, col: 0 } ] ;	
 let initialTextState = [] ;	
 
 const textReducer : ActionReducer<Text[]>  = (state: Text[] = initialTextState, action: Action) => {
 
 switch (action.type) {
 
-    case DocActionTypes.TEXT_LOAD_ALL: return action.payload ;  
+    case DocActionTypes.TEXT_LOAD_ALL: 
+	return action.payload ;  
 
-    case DocActionTypes.DOCUMENT_NEW_EMPTY_ROW: return [...state, ...action.payload ] ;
+    case DocActionTypes.DOCUMENT_NEW_EMPTY_ROW: 
+	return state.map( t => { 
+				if (t.row >= action.payload.index) 
+					  return Object.assign({},t,{row:t.row+1}); 
+					else 
+					  return t; 
+			})
+			.concat(action.payload.texts);
 
     case DocActionTypes.TEXT_UPDATE: 
 	return state.map( t => { 
@@ -134,10 +143,10 @@ switch (action.type) {
 					  return Object.assign({},t,{content:action.payload.content}); 
 					else 
 					  return t; 
-				} 
-			);
+				});
 
-    default: return state;
+    default: 
+	return state;
   }
 
 }
@@ -209,23 +218,23 @@ export class DocumentService {
   //
   addNewEmptyRow( docId: number, currentRow: number ) {
 
+    let row = currentRow;
+
     let u1 : string = uuid(); let u2 : string = uuid(); let u3 : string = uuid();
-    let row = currentRow + 1;
 
-    let newTexts = [ { id: u1, docId: docId, content: 'new', row: row, col: 0},
-    		     { id: u2, docId: docId, content: 'new', row: row, col: 1},
-    		     { id: u3, docId: docId, content: 'new', row: row, col: 2} ];
+    let newTexts = [ { id: u1, docId: docId, content: '', row: row, col: 0},
+    		     { id: u2, docId: docId, content: '', row: row, col: 1},
+    		     { id: u3, docId: docId, content: '', row: row, col: 2} ];
 
-    let body1 = `{ "id": "${u1}", "docId": "${docId}", "content": "new", "row": ${row}, "col": 0 }`;
-    let body2 = `{ "id": "${u2}", "docId": "${docId}", "content": "new", "row": ${row}, "col": 1 }`;
-    let body3 = `{ "id": "${u3}", "docId": "${docId}", "content": "new", "row": ${row}, "col": 2 }`;
+    let body1 = `{ "id": "${u1}", "docId": "${docId}", "content": "", "row": ${row}, "col": 0 }`;
+    let body2 = `{ "id": "${u2}", "docId": "${docId}", "content": "", "row": ${row}, "col": 1 }`;
+    let body3 = `{ "id": "${u3}", "docId": "${docId}", "content": "", "row": ${row}, "col": 2 }`;
 
-    // FIXME with transactional design
-    this.http.post('/api/texts/', body1, HEADER).subscribe(); 
-    this.http.post('/api/texts/', body2, HEADER).subscribe();
-    this.http.post('/api/texts/', body3, HEADER).subscribe();
+    let body = `[ ${body1}, ${body2}, ${body3} ]`;
 
-    this.store.dispatch( { type: DocActionTypes.DOCUMENT_NEW_EMPTY_ROW, payload: newTexts } ); 
+    this.http.post(`/api/rows/${row}`, body, HEADER)
+	.map( res => res.json() )
+	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.DOCUMENT_NEW_EMPTY_ROW, payload: { index: row, texts: newTexts } } ) } ); 
 
   }
 

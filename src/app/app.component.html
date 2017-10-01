@@ -28,8 +28,10 @@
 	<div class="ui divided grid">
 	  <!-- ROW NUMBER -->
       	  <div class="two wide column">
-		<div class="ui huge label">Step<div class="detail">{{i}}</div></div>
-		<button class="tiny teal ui button" style="position:relative;left:-20px;top:-20px;" (click)="addNewRow(i)" >+</button>
+		<div class="ui small label">T<div class="detail">{{("00000" + i).slice(-5)}}</div></div>
+		<i (click)="addNewRow(i)" class="teal icon pencil" style="cursor: pointer;" ></i>
+		<i (click)="deleteRow(i)" class="red icon remove" style="cursor: pointer;" ></i>
+		<i class="icon paragraph" style="cursor: pointer;" ></i>
 	  </div>
 	  <!-- COL 0 -->
           <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
@@ -72,7 +74,7 @@
           	<ng-template #textareaId2 > 
 		  <div class="four wide column">
         	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[2].id,row.line[2].content)"
-			(keydown.Tab)="addNewRow(i)"
+			(keydown.Tab)="addNewRow(i+1)"
 			[(ngModel)]="row.line[2].content"> </textarea>
 		  </div>
       		</ng-template>

@@ -2,6 +2,7 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var mongodb = require("mongodb");
 var ObjectID = mongodb.ObjectID;
+var util = require("uuid");
 
 var TEXTS_COLLECTION = "texts";
 
@@ -40,10 +41,9 @@ function handleError(res, reason, message, code) {
 }
 
 //
-// ENDPOINT TEXTS
 // GET  /api/texts	return all texts
 // POST /api/texts	insert a new text
-// PUT  /api/texts/:id	update text 
+// PUT  /api/texts/:id	update text (with content)
 // 
 app.get("/api/texts", function(req, res) {
   db.collection(TEXTS_COLLECTION).find({}).toArray(function(err, docs) {
@@ -71,7 +71,7 @@ app.put("/api/texts/:id", function(req, res) {
   var updateDoc = req.body;
 
   if (!req.body.content) {
-    handleError(res, "Invalid text input", "Must provide a content.", 400);
+	req.body.content='';
   }
 
   console.log("received put call on texts collection:");
@@ -85,6 +85,35 @@ app.put("/api/texts/:id", function(req, res) {
       res.status(200).json(updateDoc);
     }
   });
+});
+
+//
+// POST /api/rows/:newindex	insert a new row at newindex. Shift all subsequent row indexes
+//
+
+app.post("/api/rows/:newindex", function(req, res) {
+  var newTextArray = req.body;
+
+  console.log("inserting a new row at index " + req.params.newindex );
+  console.log(newTextArray);
+
+  // shift all subsequent rows, if any
+  db.collection(TEXTS_COLLECTION).updateMany( { row: { $gte: parseInt(req.params.newindex) } } , { $inc: { row: 1 }  } , function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update texts during row insertion");
+    } 
+  });
+
+  // insert a new row at newindex
+  db.collection(TEXTS_COLLECTION).insert(newTextArray, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to insert a new row.");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+
+
 });
 
 

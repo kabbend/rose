@@ -38,6 +38,9 @@ export class AppComponent implements OnInit {
     this.documentService.addNewEmptyRow( 0 /* docId, ignored for now */, i /* line index */);
   }
 
+  deleteRow(i:number) {
+  }
+
   updateText(id:string,content:string) {
     this.documentService.updateText(id,content);
   }
