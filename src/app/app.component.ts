@@ -21,7 +21,8 @@ import { DocumentService } from './store/document.service';
 
 export class AppComponent implements OnInit {
 
-  draggedText : string;
+  draggedText = { text: '', sourceId: '' };
+ 
   rows$: Observable<TextRow[]>;
 
   constructor(private documentService : DocumentService) { 
@@ -47,17 +48,18 @@ export class AppComponent implements OnInit {
   }
   
   dragEnd(event) { 
-    this.draggedText = '';
+    this.draggedText = { text: '', sourceId: '' } ;
   }
 
   dragStart(event,t:Text) { 
-    this.draggedText = t.content;
+    this.draggedText = { text: t.content, sourceId: t.id } ;
   }
 
   myDrop(target:Text,event) { 
-    target.content = this.draggedText; 
-    this.draggedText = ''; 
+    target.content = this.draggedText.text; 
+    this.documentService.updateText(this.draggedText.sourceId,'');
     this.documentService.updateText(target.id,target.content);
+    this.draggedText = { text: '', sourceId: '' } ;
   }
 
 }
