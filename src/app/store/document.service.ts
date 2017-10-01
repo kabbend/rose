@@ -17,22 +17,18 @@ const HEADER = { headers: new Headers({ 'cache': 'false', 'Content-Type': 'appli
 export const DocActionTypes = {
 
 	DOCUMENT_NEW_EMPTY_ROW:		'[Document] newRow',		// payload = { index: number, texts: Text[] }
+	DOCUMENT_DELETE_ROW:		'[Document] deleteRow',		// payload = { index: number }
 	TEXT_LOAD_ALL:			'[Text] loadAll',		// payload = Text[] 
 	TEXT_UPDATE:			'[Text] textUpdate', 		// payload = { id: string, content: string }
 
 	// future use
 	DOCUMENT_LOAD: 			'[Document] load',		// minimal payload = { id }
-
 	DOCUMENT_CREATE: 		'[Document] create',		// minimal payload = { } 
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
 	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
-
-	DOCUMENT_DELETE_ROW:		'[Document] deleteRow',		// minimal payload = { id, row }
-
 	SECTION_CREATE: 		'[Section] createSection', 	// minimal payload = { docId, start }
 	SECTION_DELETE:			'[Section] deleteSection',	// minimal payload = id: string
 	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// minimal payload = { id, title }
-
 	TEXT_CREATE:			'[Text] textCreate', 		// minimal payload = { docId, row, col }
 	TEXT_DELETE:			'[Text] textDelete', 		// minimal payload = id: string
 
@@ -41,7 +37,7 @@ export const DocActionTypes = {
 
 export class DocumentDeleteRowAction implements Action {
   type = DocActionTypes.DOCUMENT_DELETE_ROW;
-  constructor(public payload: { id: string, row:number }) { }
+  constructor(public payload: { index:number }) { }
 }
 
 export class DocumentNewEmptyRowAction implements Action {
@@ -136,6 +132,15 @@ switch (action.type) {
 					  return t; 
 			})
 			.concat(action.payload.texts);
+
+    case DocActionTypes.DOCUMENT_DELETE_ROW: 
+	return state.filter( t => { return t.row != action.payload.index; } )
+			.map( t => {
+				if (t.row > action.payload.index) 
+					  return Object.assign({},t,{row:t.row-1}); 
+					else 
+					  return t; 
+				});
 
     case DocActionTypes.TEXT_UPDATE: 
 	return state.map( t => { 
@@ -236,6 +241,15 @@ export class DocumentService {
 	.map( res => res.json() )
 	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.DOCUMENT_NEW_EMPTY_ROW, payload: { index: row, texts: newTexts } } ) } ); 
 
+  }
+
+  // 
+  // delete a row
+  //
+  deleteRow( docId: number, row: number) {
+    this.http.delete(`/api/rows/${row}`, HEADER)
+	.map( res => res.json() )
+	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.DOCUMENT_DELETE_ROW, payload: { index: row } } ) } ); 
   }
 
   //

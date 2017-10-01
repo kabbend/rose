@@ -39,6 +39,7 @@ export class AppComponent implements OnInit {
   }
 
   deleteRow(i:number) {
+    this.documentService.deleteRow( 0 /* docId, ignored for now */, i /* line index */);
   }
 
   updateText(id:string,content:string) {

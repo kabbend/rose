@@ -88,7 +88,8 @@ app.put("/api/texts/:id", function(req, res) {
 });
 
 //
-// POST /api/rows/:newindex	insert a new row at newindex. Shift all subsequent row indexes
+// POST 	/api/rows/:newindex	insert a new row at newindex. Shift all subsequent row indexes
+// DELETE 	/api/rows/:index	delete row at given index
 //
 
 app.post("/api/rows/:newindex", function(req, res) {
@@ -115,5 +116,27 @@ app.post("/api/rows/:newindex", function(req, res) {
 
 
 });
+
+app.delete("/api/rows/:index", function(req, res) {
+
+  // delete row 
+  db.collection(TEXTS_COLLECTION).deleteMany( { row: { $eq: parseInt(req.params.index) } } , function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to delete a row.");
+    } 
+  });
+
+  // shift all subsequent rows, if any
+  db.collection(TEXTS_COLLECTION).updateMany( { row: { $gt: parseInt(req.params.index) } } , { $inc: { row: -1 }  } , function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to update texts during row deletion");
+    } else {
+      res.status(200).json(doc);
+    }
+  });
+
+
+});
+
 
 
