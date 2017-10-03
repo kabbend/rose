@@ -32,6 +32,8 @@
     "express": "^4.16.0",
     "font-awesome": "^4.7.0",
     "mongodb": "^2.2.31",
+    "pg": "6.4.2",
+    "pg-transaction": "^1.0.4",
     "primeng": "^4.2.1",
     "rxjs": "^5.4.2",
     "semantic-ui": "^2.2.13",
