@@ -5,46 +5,38 @@
     <a class="item"><h3>My Documents</h3></a>
     <div class="right menu">
       <div class="item"> <a class="ui button">Log in</a> </div>
-      <div class="item"> <a class="ui primary button">Sign Up</a> </div>
     </div>
 </div>
 
 </div>
- 
- <div class="ui inverted violet segment">
-  <div class="ui grid">
-      	  <div class="two wide column"><div class="ui label">Time</div> </div>
-	  <div class="four wide column"> <div class="item"><h3>INFORMATIONS</h3></div></div>
-	  <div class="four wide column"> <div class="item"><h3>NARRATION</h3></div></div>
-	  <div class="four wide column"> <div class="item"><h3>EVENEMENTS</h3></div></div>
-  </div>
- </div>
+
+<div class="ui divided inverted grid">
+	  <div class="ui tiny label" style="float:left;vertical-align:center;">0000</div> 
+	  <div class="five wide column"> <div class="item"><h3>INFOS</h3></div></div>
+	  <div class="five wide column"> <div class="item" style="float:middle;"><h3>NARRATION</h3></div></div>
+	  <div class="four wide column"> <div class="item" style="float:right;"><h3>EVENTS</h3></div></div>
+</div>
 
 <div class="ui divided list">
  <!-- LIST OF ROWS -->          
  <div class="item" *ngFor="let row of rows$ | async; let i = index">
 	<!-- GRID WITHIN THE LINE -->
 	<div class="ui divided grid">
-	  <!-- ROW NUMBER -->
-      	  <div class="one wide column">
-		<div class="ui small label">T<div class="detail">{{("00000" + i).slice(-5)}}</div></div>
-		<i (click)="addNewRow(i)" class="teal icon pencil" style="cursor: pointer;position:relative;top:-5px;" ></i>
-		<i (click)="deleteRow(i)" class="red icon remove" style="cursor: pointer;position:relative;top:-5px;"></i>
-		<i class="icon paragraph" style="cursor: pointer;position:relative;top:-5px;" ></i>
-	  </div>
 	  <!-- COL 0 -->
           <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
 	  </div>
           	<ng-template #textareaId0 > 
-		  <div class="four wide column">
+		<div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
+		  <div class="five wide column">
         	  	<textarea rosetextarea class="rose-textarea" 
 			autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[0].id,row.line[0].content)" 
 			[(ngModel)]="row.line[0].content"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId0 > 
-		   <div class="four wide column">
-        		<markdown class="markdown" 
+		<div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
+		   <div class="five wide column">
+        		<markdown class="markdown"
         		[data]="row.line[0].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[0],$event)" 
 			(onDragStart)="dragStart($event,row.line[0])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=0;"> </markdown>
 		   </div>
@@ -53,13 +45,13 @@
           <div *ngIf="currentEdition==i && currentCol==1; then textareaId1 else markdownId1" > 
 	  </div>
           	<ng-template #textareaId1 > 
-		  <div class="four wide column">
+		  <div class="five wide column">
         	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[1].id,row.line[1].content)"
 			[(ngModel)]="row.line[1].content"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId1 > 
-		   <div class="four wide column">
+		   <div class="five wide column">
 			<i>
         		<markdown class="markdown"
         		[data]="row.line[1].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[1],$event)" 
@@ -79,6 +71,9 @@
       		</ng-template>
       		<ng-template #markdownId2 > 
 		   <div class="four wide column">
+		    <i (click)="addNewRow(i)" class="violet icon pencil" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;" ></i>
+		    <i (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;"></i>
+		    <i class="violet icon paragraph" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;" ></i>
         		<markdown class="markdown"
         		[data]="row.line[2].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[2],$event)" 
 			(onDragStart)="dragStart($event,row.line[2])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=2;"> </markdown>
