@@ -1,7 +1,6 @@
 <div class="ui segment" id="topmenu">
 
 <div class="ui fixed inverted violet menu">
-    <a class="item"><h3>Home</h3></a>
     <a class="item"><h3>My Documents</h3></a>
     <div class="right menu">
       <div class="item"> <a class="ui button">Log in</a> </div>
@@ -10,35 +9,45 @@
 
 </div>
 
+<!--
 <div class="ui divided inverted grid">
 	  <div class="ui tiny label" style="float:left;vertical-align:center;">0000</div> 
 	  <div class="five wide column"> <div class="item"><h3>INFOS</h3></div></div>
 	  <div class="five wide column"> <div class="item" style="float:middle;"><h3>NARRATION</h3></div></div>
 	  <div class="four wide column"> <div class="item" style="float:right;"><h3>EVENTS</h3></div></div>
 </div>
+-->
 
-<div class="ui divided list">
+<div class="ui divided list" style="position:relative;top:15px;">
  <!-- LIST OF ROWS -->          
- <div class="item" *ngFor="let row of rows$ | async; let i = index">
+ <div class="item" *ngFor="let line of lines$ | async; let i = index">
+	<!-- SECTION -->
+		<i *ngIf="line.section" (click)="addNewRow(i)" class="violet icon pencil" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;" ></i>
+		<i *ngIf="line.section" (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;"></i>
+		<div class="ui item fourteen wide column" *ngIf="line.section">
+		 <div class="ui fluid input">
+  		  <input type="text" [value]="line.section.title" >
+		 </div>
+		</div>
 	<!-- GRID WITHIN THE LINE -->
 	<div class="ui divided grid">
 	  <!-- COL 0 -->
           <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
 	  </div>
           	<ng-template #textareaId0 > 
-		<div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
+		  <div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
 		  <div class="five wide column">
         	  	<textarea rosetextarea class="rose-textarea" 
-			autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[0].id,row.line[0].content)" 
-			[(ngModel)]="row.line[0].content"> </textarea>
+			autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(line.text.line[0].id,line.text.line[0].content)" 
+			[(ngModel)]="line.text.line[0].content"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId0 > 
-		<div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
+		   <div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
 		   <div class="five wide column">
         		<markdown class="markdown"
-        		[data]="row.line[0].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[0],$event)" 
-			(onDragStart)="dragStart($event,row.line[0])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=0;"> </markdown>
+        		[data]="line.text.line[0].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(line.text.line[0],$event)" 
+			(onDragStart)="dragStart($event,line.text.line[0])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=0;"> </markdown>
 		   </div>
       		</ng-template>
 	  <!-- COL 1 -->
@@ -46,16 +55,17 @@
 	  </div>
           	<ng-template #textareaId1 > 
 		  <div class="five wide column">
-        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[1].id,row.line[1].content)"
-			[(ngModel)]="row.line[1].content"> </textarea>
+        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()"
+(blur)="currentEdition=-1;updateText(line.text.line[1].id,line.text.line[1].content)"
+			[(ngModel)]="line.text.line[1].content"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId1 > 
 		   <div class="five wide column">
 			<i>
         		<markdown class="markdown"
-        		[data]="row.line[1].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[1],$event)" 
-			(onDragStart)="dragStart($event,row.line[1])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=1;"> </markdown>
+        		[data]="line.text.line[1].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(line.text.line[1],$event)" 
+			(onDragStart)="dragStart($event,line.text.line[1])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=1;"> </markdown>
 			</i>
 		   </div>
       		</ng-template>
@@ -64,19 +74,21 @@
 	  </div>
           	<ng-template #textareaId2 > 
 		  <div class="four wide column">
-        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(row.line[2].id,row.line[2].content)"
+        	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()"
+(blur)="currentEdition=-1;updateText(line.text.line[2].id,line.text.line[2].content)"
 			(keydown.Tab)="addNewRow(i+1)"
-			[(ngModel)]="row.line[2].content"> </textarea>
+			[(ngModel)]="line.text.line[2].content"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId2 > 
 		   <div class="four wide column">
-		    <i (click)="addNewRow(i)" class="violet icon pencil" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;" ></i>
-		    <i (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;"></i>
-		    <i class="violet icon paragraph" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;" ></i>
+		    <i *ngIf="!line.section" (click)="addNewRow(i)" class="violet icon pencil" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;" ></i>
+		    <i *ngIf="!line.section" (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;"></i>
+		    <i *ngIf="!line.section" (click)="insertSection(line.text.line[0].id)" 
+			class="violet icon paragraph" style="cursor:pointer;position:relative;top:-9px;float:right;right:-30px;" ></i>
         		<markdown class="markdown"
-        		[data]="row.line[2].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(row.line[2],$event)" 
-			(onDragStart)="dragStart($event,row.line[2])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=2;"> </markdown>
+        		[data]="line.text.line[2].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(line.text.line[2],$event)" 
+			(onDragStart)="dragStart($event,line.text.line[2])" (onDragEnd)="dragEnd($event)" (click)="currentEdition=i;currentCol=2;"> </markdown>
 		   </div>
       		</ng-template>
 	</div> <!-- END OF GRID -->

@@ -27,4 +27,9 @@
 	border-color:none;
 }
 
+.ui.fluid.input input {
+	background-color:#E6E0F8;
+	color:black;
+}
+
 

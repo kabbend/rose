@@ -163,4 +163,40 @@ app.delete("/api/rows/:index", function(req, res) {
    
 });
 
+//
+// GET  /api/sections		retrieve all sections
+// POST	/api/sections		insert a new (empty) section
+//
+
+app.post("/api/sections", function(req, res) {
+  var newSection = req.body;
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    client.query('INSERT INTO sections(title, docid, starttextid) values($1, $2, $3);',
+    [newSection.title, newSection.docid, newSection.starttextid]);
+    done();
+  });
+  return res.status(200).json({success: true});
+});
+
+app.get("/api/sections", function(req, res) {
+  const results = [];
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    const query = client.query('SELECT * FROM sections;');
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    query.on('end', () => {
+      done();
+      return res.json(results);
+    });
+  });
+});
 

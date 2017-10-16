@@ -19,107 +19,41 @@ export const DocActionTypes = {
 	DOCUMENT_NEW_EMPTY_ROW:		'[Document] newRow',		// payload = { index: number, texts: Text[] }
 	DOCUMENT_DELETE_ROW:		'[Document] deleteRow',		// payload = { index: number }
 	TEXT_LOAD_ALL:			'[Text] loadAll',		// payload = Text[] 
+	SECTION_LOAD_ALL:		'[Sections] loadAll',		// payload = Sections[] 
 	TEXT_UPDATE:			'[Text] textUpdate', 		// payload = { id: string, content: string }
+	SECTION_CREATE: 		'[Section] createSection', 	// payload = Section 
 
 	// future use
 	DOCUMENT_LOAD: 			'[Document] load',		// minimal payload = { id }
 	DOCUMENT_CREATE: 		'[Document] create',		// minimal payload = { } 
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
 	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
-	SECTION_CREATE: 		'[Section] createSection', 	// minimal payload = { docId, start }
 	SECTION_DELETE:			'[Section] deleteSection',	// minimal payload = id: string
 	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// minimal payload = { id, title }
-	TEXT_CREATE:			'[Text] textCreate', 		// minimal payload = { docId, row, col }
-	TEXT_DELETE:			'[Text] textDelete', 		// minimal payload = id: string
 
 }
-
-
-export class DocumentDeleteRowAction implements Action {
-  type = DocActionTypes.DOCUMENT_DELETE_ROW;
-  constructor(public payload: { index:number }) { }
-}
-
-export class DocumentNewEmptyRowAction implements Action {
-  type = DocActionTypes.DOCUMENT_NEW_EMPTY_ROW;
-  constructor(public payload: { index: number, texts: Text[] } ) { }
-}
-
-export class DocumentUpdateTitleAction implements Action {
-  type = DocActionTypes.DOCUMENT_UPDATE_TITLE;
-  constructor(public payload: { id:string, title:string} ) { }
-}
-
-export class DocumentDeleteAction implements Action {
-  type = DocActionTypes.DOCUMENT_DELETE;
-  constructor(public payload: string) { }
-}
-
-
-export class DocumentCreateAction implements Action {
-  type = DocActionTypes.DOCUMENT_CREATE;
-  constructor(public payload: { id?: string, title?: string, sectionIds?: string[], textIds?: string[] } ) {}
-}
-
-export class SectionUpdateTitleAction implements Action {
-  type = DocActionTypes.SECTION_UPDATE_TITLE;
-  constructor(public payload: { id:string, title:string } ) { }
-}
-
-export class SectionCreateAction implements Action {
-  type = DocActionTypes.SECTION_CREATE;
-  constructor(public payload: { id?: string, title?: string, docId: string, start: number, end?: number }) { }
-}
-
-export class SectionDeleteAction implements Action {
-  type = DocActionTypes.SECTION_DELETE;
-  constructor(public payload: string ) { }
-}
-
-export class TextCreateAction implements Action {
-  type = DocActionTypes.TEXT_CREATE;
-  constructor(public payload: { id?: string, content?: string, docId: string, sectionId?: string, row, col: number }) { }
-}
-
-export class TextUpdateAction implements Action {
-  type = DocActionTypes.TEXT_UPDATE;
-  constructor(public payload: { id: string, content: string } ) { }
-}
-
-export class TextDeleteAction implements Action {
-  type = DocActionTypes.TEXT_DELETE;
-  constructor(public payload: string ) { }
-}
-
-export class TextLoadAllAction implements Action {
-  type = DocActionTypes.TEXT_LOAD_ALL;
-  constructor(public payload: Text[]) { }
-}
-
-export type DocActions =
-  DocumentCreateAction |
-  DocumentDeleteAction |
-  DocumentUpdateTitleAction |
-  DocumentNewEmptyRowAction |
-  DocumentDeleteRowAction |
-  TextLoadAllAction |
-  TextCreateAction |
-  TextDeleteAction |
-  TextUpdateAction |
-  SectionUpdateTitleAction |
-  SectionDeleteAction |
-  SectionCreateAction ;
 
 /**
  ** REDUCERS
  **/
 
+const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , action: Action) => {
+  switch (action.type) {
 
-let initialTextState = [] ;	
+    case DocActionTypes.SECTION_CREATE:
+	return [ ...state, Object.assign({},action.payload) ];
 
-const textReducer : ActionReducer<Text[]>  = (state: Text[] = initialTextState, action: Action) => {
+    case DocActionTypes.SECTION_LOAD_ALL: 
+	return action.payload ;  
 
-switch (action.type) {
+    default: 
+	return state;
+  }
+}
+
+const textReducer : ActionReducer<Text[]>  = (state: Text[] = [], action: Action) => {
+
+  switch (action.type) {
 
     case DocActionTypes.TEXT_LOAD_ALL: 
 	return action.payload ;  
@@ -157,7 +91,8 @@ switch (action.type) {
 }
 
 const reducers = {
-  texts: textReducer
+  texts: textReducer,
+  sections: sectionReducer
 };
 
 const productionReducer = combineReducers(reducers);
@@ -173,6 +108,7 @@ export function reducer(state: any, action: any) {
 export class DocumentService {
 
   texts$ : Observable<Text[]>;
+  sections$ : Observable<Section[]>;
   rows$ : Observable<TextRow[]>;
 
   constructor( private http : Http, private store: Store<AppStore> ) { 
@@ -181,6 +117,7 @@ export class DocumentService {
 	// observable on the raw text data
 	//
 	this.texts$ = this.store.select('texts');	
+	this.sections$ = this.store.select('sections');
 
 	//
 	// observable on text data, but reorganize individual texts into rows (from Text[] to TextRow[]) 
@@ -213,9 +150,14 @@ export class DocumentService {
   // Initial text load, here on JSON server
   //
   loadAllTexts() {
+
     this.http.get('/api/texts', HEADER)
 	.map( res => res.json() )
 	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.TEXT_LOAD_ALL, payload: texts } ) } ); 
+
+    this.http.get('/api/sections', HEADER)
+	.map( res => res.json() )
+	.subscribe( sections => { this.store.dispatch( { type: DocActionTypes.SECTION_LOAD_ALL, payload: sections } ) } ); 
   }
 
   //
@@ -262,11 +204,21 @@ export class DocumentService {
     this.store.dispatch( { type: DocActionTypes.TEXT_UPDATE, payload: { id: id, content: content } } ); 
   }
 
+  // 
+  // create a new (empty) section
+  //
+  insertSection( docId: number, textId: string ) {
+    var newSection = { docid: docId, starttextid: textId, title: 'Section' };
+    var body = JSON.stringify(newSection);
+    this.http.post(`/api/sections`, body, HEADER).subscribe( res => this.store.dispatch( { type: DocActionTypes.SECTION_CREATE, payload: newSection } ) ); 
+  }
+
   //
   // expose Observables to components
   //
   getTexts() : Observable<Text[]> { return this.texts$; }
   getRows() : Observable<TextRow[]> { return this.rows$; }
+  getSections(): Observable<Section[]> { return this.sections$; }
 
 }
 

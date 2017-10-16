@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Component } 	 from '@angular/core';
+import { Observable } 	 from 'rxjs/Observable';
+import 'rxjs/add/observable/combineLatest';
 
-import { Text, TextRow, Document, Section } from './store/document.model';
+import { Text, TextRow, Document, Section, Line } from './store/document.model';
 
-//import { InputTextModule} from 'primeng/primeng';
 import { DragDropModule} from 'primeng/primeng';
-import { Autosize } from './autosize.directive';
+import { Autosize } 	 from './autosize.directive';
 
 import { DocumentService } from './store/document.service';
 
@@ -19,21 +19,40 @@ import { DocumentService } from './store/document.service';
     '../assets/Semantic-UI-CSS-master/semantic.min.css'],
 })
 
-export class AppComponent implements OnInit {
+export class AppComponent {
 
+  // flags and information needed for drag & drop within the view
   draggedText = { text: '', sourceId: '' };
- 
-  rows$: Observable<TextRow[]>;
-
-  constructor(private documentService : DocumentService) { 
-    this.rows$ = this.documentService.getRows();
-    this.documentService.loadAllTexts();
-  }
-
-  ngOnInit() : void {}
-
   currentEdition : number = -1;
   currentCol: number = 0;
+
+  // raw data coming from the document service 
+  rows$: Observable<TextRow[]>;
+  sections$: Observable<Section[]>;
+
+  // combined observable to be used by the view
+  lines$: Observable<Line[]>;
+
+  constructor(private documentService : DocumentService) { 
+
+    // get raw data
+    this.rows$ = this.documentService.getRows();
+    this.sections$ = this.documentService.getSections();
+
+    // combine these data into one single observable for display
+    this.lines$ = Observable.combineLatest(
+	this.rows$,
+	this.sections$,
+    	(r,s) => { var ret = [];
+		   for(var i=0;i<r.length;i++) { ret.push( { section: s.find( sec => (sec.starttextid == r[i].line[0].id) ) || null , text: r[i] }); }  
+		   return ret.sort( (a,b) => a.text.line[0].row - b.text.line[0].row ); 
+		 }
+    );
+
+    // load all texts at startup
+    this.documentService.loadAllTexts();
+
+  }
 
   addNewRow(i:number) {
     this.documentService.addNewEmptyRow( 0 /* docId, ignored for now */, i /* line index */);
@@ -47,6 +66,10 @@ export class AppComponent implements OnInit {
     this.documentService.updateText(id,content);
   }
   
+  insertSection(id:string) {
+    this.documentService.insertSection( 0 /* docId, ignored for now */, id);
+  }
+
   dragEnd(event) { 
     this.draggedText = { text: '', sourceId: '' } ;
   }

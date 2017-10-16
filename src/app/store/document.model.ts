@@ -12,22 +12,24 @@ export interface Text {
 
 export interface Section {
  id : string;		// uuid
- docId: string;		// document it belongs to
+ docid: string;		// document it belongs to
  title : string;	// title of the section
- start: number;		// first line of the section within the document (might be 0) 
- end: number;		// last line of the section within the document
+ starttextid: string;	// first text of the section within the document (might be 0) 
 }
 
 export interface Document {
  id : string;		// uuid
  title : string;	// title of the document
- sectionIds?: string[];	// list of sections (optional)
- textIds: string[];	// list of texts (in no particular order)
 }
 
 export interface TextRow {
   id: string;		// uuid
   line: Text[];		// array of (three) Texts
+}
+
+export interface Line {
+  section?: Section,
+  text: TextRow
 }
 
 
