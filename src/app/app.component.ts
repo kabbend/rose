@@ -85,6 +85,10 @@ export class AppComponent {
     this.draggedText = { text: '', sourceId: '' } ;
   }
 
+  updateSection(id,text) {
+    this.documentService.updateSection(id,text);
+  }
+
 }
 
 

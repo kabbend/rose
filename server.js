@@ -166,6 +166,7 @@ app.delete("/api/rows/:index", function(req, res) {
 //
 // GET  /api/sections		retrieve all sections
 // POST	/api/sections		insert a new (empty) section
+// PUT  /api/sections/:tid	update section title with starttextid = tid
 //
 
 app.post("/api/sections", function(req, res) {
@@ -198,5 +199,29 @@ app.get("/api/sections", function(req, res) {
       return res.json(results);
     });
   });
+});
+
+app.put("/api/sections/:id", function(req, res) {
+
+  // Grab data from the URL parameters
+  const id = req.params.id;
+  // Grab data from http request
+  const data = {title: req.body.title || '' };
+
+  console.log("received put call on sections collection:");
+  console.log(id);
+  console.log(data);
+
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    console.log('UPDATE sections SET title=('+data.title+') WHERE starttextid = ('+id+');');
+    client.query('UPDATE sections SET title=($1) WHERE starttextid = ($2);', [data.title, id]);
+    done();
+  });
+  return res.status(200).json({success: true});
+
 });
 

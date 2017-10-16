@@ -26,7 +26,7 @@
 		<i *ngIf="line.section" (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;"></i>
 		<div class="ui item fourteen wide column" *ngIf="line.section">
 		 <div class="ui fluid input">
-  		  <input type="text" [value]="line.section.title" >
+  		  <input type="text" #box (keyup.enter)="updateSection(line.text.line[0].id, box.value)" [value]="line.section.title" >
 		 </div>
 		</div>
 	<!-- GRID WITHIN THE LINE -->

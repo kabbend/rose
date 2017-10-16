@@ -28,6 +28,8 @@
 }
 
 .ui.fluid.input input {
+	font-family:FontAwesome,sans-serif;
+	font-weight: bold;
 	background-color:#E6E0F8;
 	color:black;
 }

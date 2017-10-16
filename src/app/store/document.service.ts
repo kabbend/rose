@@ -22,6 +22,7 @@ export const DocActionTypes = {
 	SECTION_LOAD_ALL:		'[Sections] loadAll',		// payload = Sections[] 
 	TEXT_UPDATE:			'[Text] textUpdate', 		// payload = { id: string, content: string }
 	SECTION_CREATE: 		'[Section] createSection', 	// payload = Section 
+	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// payload = { textid, title }
 
 	// future use
 	DOCUMENT_LOAD: 			'[Document] load',		// minimal payload = { id }
@@ -29,7 +30,6 @@ export const DocActionTypes = {
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
 	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
 	SECTION_DELETE:			'[Section] deleteSection',	// minimal payload = id: string
-	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// minimal payload = { id, title }
 
 }
 
@@ -45,6 +45,14 @@ const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , actio
 
     case DocActionTypes.SECTION_LOAD_ALL: 
 	return action.payload ;  
+
+    case DocActionTypes.SECTION_UPDATE_TITLE: 
+	return state.map( s => { 
+				if (s.starttextid == action.payload.textid) 
+					  return Object.assign({},s,{title:action.payload.title}); 
+					else 
+					  return s; 
+				});
 
     default: 
 	return state;
@@ -211,6 +219,16 @@ export class DocumentService {
     var newSection = { docid: docId, starttextid: textId, title: 'Section' };
     var body = JSON.stringify(newSection);
     this.http.post(`/api/sections`, body, HEADER).subscribe( res => this.store.dispatch( { type: DocActionTypes.SECTION_CREATE, payload: newSection } ) ); 
+  }
+
+  //
+  // Update a section title 
+  //
+  updateSection( textid: string, title: string ) {
+    let body = `{ "title": ${JSON.stringify(title)} }`;
+    console.log(body);
+    this.http.put(`/api/sections/${textid}`, body, HEADER).subscribe(); 
+    this.store.dispatch( { type: DocActionTypes.SECTION_UPDATE_TITLE, payload: { textid: textid, title: title } } ); 
   }
 
   //
