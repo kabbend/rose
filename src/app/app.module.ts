@@ -9,14 +9,16 @@ import { Autosize } 		from './autosize.directive';
 import { MarkdownModule} 	from 'angular2-markdown';
 import { StoreModule } 		from '@ngrx/store';
 
-import { AppComponent } from './app.component';
-import { RoseTextarea } from './rose-textarea.directive';
+import { AppComponent } 		from './app.component';
+import { SectionDropDownComponent } 	from './dd.component';
+import { RoseTextarea } 		from './rose-textarea.directive';
 
 import { DocumentService, reducer } from './store/document.service';
 
 @NgModule({
   declarations: [
     AppComponent,
+    SectionDropDownComponent,
     Autosize,
     RoseTextarea,
   ],
