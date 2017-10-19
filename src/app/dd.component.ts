@@ -1,5 +1,6 @@
 import { Component } 	 from '@angular/core';
 import { Observable } 	 from 'rxjs/Observable';
+import 'rxjs/add/observable/combineLatest';
 
 import { Section } from './store/document.model';
 
@@ -23,15 +24,21 @@ import { DocumentService } from './store/document.service';
 
 export class SectionDropDownComponent {
 
-  // raw data coming from the document service 
   sections$: Observable<Section[]>;
 
   constructor(private documentService : DocumentService) { 
-    // get raw data
-    this.sections$ = this.documentService.getSections();
-    this.sections$.subscribe( s => console.log("sections=" + s.length) );
+    // get raw data then filter it and sort it
+    this.sections$ = Observable.combineLatest(
+	this.documentService.getTexts(),
+	this.documentService.getSections(),
+        (t,s) => { var ret = [];
+                   for(var i=0;i<s.length;i++) { ret.push( { text: t.find( t => (t.id == s[i].starttextid) ) || null , section: s[i] }); }
+		   ret = ret.filter( r => r.text != null  ).sort( (a,b) => a.text.row - b.text.row );
+		   return ret.map( r => r.section );
+                 }
+    );
+
   }
 
 }
-
 
