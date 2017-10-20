@@ -10,13 +10,21 @@ import { MarkdownModule} 	from 'angular2-markdown';
 import { StoreModule } 		from '@ngrx/store';
 
 import { AppComponent } 		from './app.component';
+import { RootComponent } 		from './root.component';
 import { SectionDropDownComponent } 	from './dd.component';
 import { RoseTextarea } 		from './rose-textarea.directive';
 
 import { DocumentService, reducer } from './store/document.service';
 
+import {Routes, RouterModule} from "@angular/router";
+
+const routes: Routes = [
+ { path: '', component: AppComponent },
+];
+
 @NgModule({
   declarations: [
+    RootComponent,
     AppComponent,
     SectionDropDownComponent,
     Autosize,
@@ -29,9 +37,10 @@ import { DocumentService, reducer } from './store/document.service';
     DragDropModule,
     MarkdownModule,
     HttpModule,
-    StoreModule.provideStore(reducer)
+    StoreModule.provideStore(reducer),
+    RouterModule.forRoot(routes, {useHash: true})
   ],
   providers: [DocumentService],
-  bootstrap: [AppComponent]
+  bootstrap: [RootComponent]
 })
 export class AppModule { }

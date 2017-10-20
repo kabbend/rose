@@ -1,24 +1,3 @@
-<div class="ui segment" id="topmenu">
-
-<div class="ui fixed inverted violet menu">
-    <a class="item"><h3>My Documents</h3></a>
-    <div class="ui inverted item"><section-dd></section-dd></div>
-    <div class="right menu">
-      <div class="item"> <a class="ui button">Log in</a> </div>
-    </div>
-</div>
-
-</div>
-
-<!--
-<div class="ui divided inverted grid">
-	  <div class="ui tiny label" style="float:left;vertical-align:center;">0000</div> 
-	  <div class="five wide column"> <div class="item"><h3>INFOS</h3></div></div>
-	  <div class="five wide column"> <div class="item" style="float:middle;"><h3>NARRATION</h3></div></div>
-	  <div class="four wide column"> <div class="item" style="float:right;"><h3>EVENTS</h3></div></div>
-</div>
--->
-
 <div class="ui divided list" style="position:relative;top:15px;">
  <!-- LIST OF ROWS -->          
  <div class="item" *ngFor="let line of lines$ | async; let i = index">
@@ -26,7 +5,7 @@
 		<i *ngIf="line.section" (click)="addNewRow(i)" class="violet icon pencil" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;" ></i>
 		<i *ngIf="line.section" (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;"></i>
 		<div class="ui item fourteen wide column" *ngIf="line.section">
-		 <div class="ui fluid input">
+		 <div id="{{line.section.starttextid}}" class="ui fluid input">
   		  <input type="text" #box (keyup.enter)="updateSection(line.text.line[0].id, box.value)" [value]="line.section.title" >
 		 </div>
 		</div>

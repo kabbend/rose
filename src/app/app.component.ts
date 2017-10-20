@@ -1,4 +1,4 @@
-import { Component } 	 from '@angular/core';
+import { Component }  from '@angular/core';
 import { Observable } 	 from 'rxjs/Observable';
 import 'rxjs/add/observable/combineLatest';
 
@@ -9,8 +9,10 @@ import { Autosize } 	 from './autosize.directive';
 
 import { DocumentService } from './store/document.service';
 
+import { ActivatedRoute } from '@angular/router';
+
 @Component({
-  selector: 'app-root',
+  selector: 'rogse-app',
   templateUrl: './app.component.html',
   styleUrls: ["../../node_modules/font-awesome/css/font-awesome.min.css",
     "../../node_modules/primeng/resources/primeng.min.css",
@@ -33,8 +35,7 @@ export class AppComponent {
   // combined observable to be used by the view
   lines$: Observable<Line[]>;
 
-  constructor(private documentService : DocumentService) { 
-
+  constructor(private documentService : DocumentService, private route: ActivatedRoute ) {
     // get raw data
     this.rows$ = this.documentService.getRows();
     this.sections$ = this.documentService.getSections();

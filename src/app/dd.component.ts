@@ -1,5 +1,6 @@
-import { Component } 	 from '@angular/core';
+import { Component, EventEmitter, Output } 	 from '@angular/core';
 import { Observable } 	 from 'rxjs/Observable';
+import { Router } 	 from "@angular/router";
 import 'rxjs/add/observable/combineLatest';
 
 import { Section } from './store/document.model';
@@ -11,7 +12,8 @@ import { DocumentService } from './store/document.service';
   template: `<div class="ui simple dropdown item">
     		Sections<i class="dropdown icon"></i>
     		<div class="menu">
-      		  <a class="item small" *ngFor="let section of sections$ | async" href="#">{{ section.title }}</a>
+      		  <div class="item small" *ngFor="let section of sections$ | async" style="cursor: pointer" (click)="emitScroll(section.starttextid)" >{{ section.title }}
+			</div>
     		</div>
   	    </div>
 	  `,
@@ -24,7 +26,14 @@ import { DocumentService } from './store/document.service';
 
 export class SectionDropDownComponent {
 
+  @Output() scroll = new EventEmitter<string>();
+
   sections$: Observable<Section[]>;
+
+  emitScroll(id: string) {
+    console.log("emit scroll:"+id);
+    this.scroll.emit(id);
+  }
 
   constructor(private documentService : DocumentService) { 
     // get raw data then filter it and sort it
