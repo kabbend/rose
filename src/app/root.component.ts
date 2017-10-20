@@ -36,6 +36,7 @@ export class RootComponent {
         let elem = document.getElementById(id)
 	console.log("elem="+elem);
 	if (elem) elem.scrollIntoView();
+	window.scrollBy(0,-70);
   }
 
 }
