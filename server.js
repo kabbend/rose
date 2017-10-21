@@ -164,9 +164,10 @@ app.delete("/api/rows/:index", function(req, res) {
 });
 
 //
-// GET  /api/sections		retrieve all sections
-// POST	/api/sections		insert a new (empty) section
-// PUT  /api/sections/:tid	update section title with starttextid = tid
+// GET     /api/sections		retrieve all sections
+// POST	   /api/sections		insert a new (empty) section
+// PUT     /api/sections/:tid		update section title with starttextid = tid
+// DELETE  /api/sections/:tid		delete section title with starttextid = tid
 //
 
 app.post("/api/sections", function(req, res) {
@@ -225,3 +226,30 @@ app.put("/api/sections/:id", function(req, res) {
 
 });
 
+app.delete("/api/sections/:id", function(req, res) {
+
+  // Grab data from the URL parameters
+  const id = req.params.id;
+
+  console.log("deleting a section with starttextid = " + id );
+
+  // delete the row
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+
+    const q3 = 'DELETE FROM sections WHERE starttextid = ($1);';
+    console.log(q3);
+
+    client.query(q3,[id]);
+    
+    done();
+    console.log('done');
+  });
+  return res.status(200).json({success: true});
+   
+});
+
+//

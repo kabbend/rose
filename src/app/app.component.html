@@ -3,7 +3,8 @@
  <div class="item" *ngFor="let line of lines$ | async; let i = index">
 	<!-- SECTION -->
 		<i *ngIf="line.section" (click)="addNewRow(i)" class="violet icon pencil" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;" ></i>
-		<i *ngIf="line.section" (click)="deleteRow(i)" class="violet icon remove" style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;"></i>
+		<i *ngIf="line.section" (click)="deleteSection(line.text.line[0].id)" class="violet icon remove" 
+			style="cursor:pointer;position:relative;top:-9px;float:right;right:-4px;"></i>
 		<div class="ui item fourteen wide column" *ngIf="line.section">
 		 <div id="{{line.section.starttextid}}" class="ui fluid input">
   		  <input type="text" #box (keyup.enter)="updateSection(line.text.line[0].id, box.value)" [value]="line.section.title" >

@@ -90,6 +90,10 @@ export class AppComponent {
     this.documentService.updateSection(id,text);
   }
 
+  deleteSection(id) {
+    this.documentService.deleteSection(id);
+  }
+
 }
 
 

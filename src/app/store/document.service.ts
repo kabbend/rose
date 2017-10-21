@@ -22,6 +22,7 @@ export const DocActionTypes = {
 	SECTION_LOAD_ALL:		'[Sections] loadAll',		// payload = Sections[] 
 	TEXT_UPDATE:			'[Text] textUpdate', 		// payload = { id: string, content: string }
 	SECTION_CREATE: 		'[Section] createSection', 	// payload = Section 
+	SECTION_DELETE:			'[Section] deleteSection',	// payload = string
 	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// payload = { textid, title }
 
 	// future use
@@ -29,7 +30,6 @@ export const DocActionTypes = {
 	DOCUMENT_CREATE: 		'[Document] create',		// minimal payload = { } 
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
 	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
-	SECTION_DELETE:			'[Section] deleteSection',	// minimal payload = id: string
 
 }
 
@@ -45,6 +45,9 @@ const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , actio
 
     case DocActionTypes.SECTION_LOAD_ALL: 
 	return action.payload ;  
+
+    case DocActionTypes.SECTION_DELETE: 
+	return state.filter( s => { return s.starttextid != action.payload; } );
 
     case DocActionTypes.SECTION_UPDATE_TITLE: 
 	return state.map( s => { 
@@ -229,6 +232,15 @@ export class DocumentService {
     console.log(body);
     this.http.put(`/api/sections/${textid}`, body, HEADER).subscribe(); 
     this.store.dispatch( { type: DocActionTypes.SECTION_UPDATE_TITLE, payload: { textid: textid, title: title } } ); 
+  }
+
+  // 
+  // delete a section 
+  //
+  deleteSection( starttextid: number) {
+    this.http.delete(`/api/sections/${starttextid}`, HEADER)
+	.map( res => res.json() )
+	.subscribe( sections => { this.store.dispatch( { type: DocActionTypes.SECTION_DELETE, payload: starttextid } ) } ); 
   }
 
   //
