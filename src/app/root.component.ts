@@ -10,7 +10,7 @@ import { DocumentService } from './store/document.service';
 	<div class="ui segment" id="topmenu">
 	<div class="ui fixed inverted violet menu">
     	<a class="item"><h3>My Documents</h3></a>
-    	<div class="ui inverted item">
+    	<div class="ui inverted item" *ngIf="thereAreSections" >
 	  <section-dd (scroll)="scroll($event)"></section-dd>
 	</div>
     	<div class="right menu">
@@ -29,14 +29,15 @@ import { DocumentService } from './store/document.service';
 
 export class RootComponent {
 
+  thereAreSections: boolean = false;
+
   constructor(private documentService : DocumentService, private element: ElementRef) { 
+	this.documentService.getSections().subscribe( s => this.thereAreSections = (s.length != 0) );
   }
 
   scroll(id: string) {
         let elem = document.getElementById(id)
-	console.log("elem="+elem);
-	if (elem) elem.scrollIntoView();
-	window.scrollBy(0,-70);
+	if (elem) { elem.scrollIntoView(); window.scrollBy(0,-70); }
   }
 
 }
