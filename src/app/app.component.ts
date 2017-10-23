@@ -1,4 +1,4 @@
-import { Component }  from '@angular/core';
+import { Component, Input }  from '@angular/core';
 import { Observable } 	 from 'rxjs/Observable';
 import 'rxjs/add/observable/combineLatest';
 
@@ -6,6 +6,7 @@ import { Text, TextRow, Document, Section, Line } from './store/document.model';
 
 import { DragDropModule} from 'primeng/primeng';
 import { Autosize } 	 from './autosize.directive';
+import { SectionComponent } from './section.component';
 
 import { DocumentService } from './store/document.service';
 
@@ -22,6 +23,8 @@ import { ActivatedRoute } from '@angular/router';
 })
 
 export class AppComponent {
+
+  @Input() scrollY;
 
   // flags and information needed for drag & drop within the view
   draggedText = { text: '', sourceId: '' };
@@ -84,10 +87,6 @@ export class AppComponent {
     this.documentService.updateText(this.draggedText.sourceId,'');
     this.documentService.updateText(target.id,target.content);
     this.draggedText = { text: '', sourceId: '' } ;
-  }
-
-  updateSection(id,text) {
-    this.documentService.updateSection(id,text);
   }
 
   deleteSection(id) {

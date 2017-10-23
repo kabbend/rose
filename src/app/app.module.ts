@@ -11,6 +11,7 @@ import { StoreModule } 		from '@ngrx/store';
 
 import { AppComponent } 		from './app.component';
 import { RootComponent } 		from './root.component';
+import { SectionComponent } 		from './section.component';
 import { SectionDropDownComponent } 	from './dd.component';
 import { RoseTextarea } 		from './rose-textarea.directive';
 
@@ -26,6 +27,7 @@ const routes: Routes = [
   declarations: [
     RootComponent,
     AppComponent,
+    SectionComponent,
     SectionDropDownComponent,
     Autosize,
     RoseTextarea,
