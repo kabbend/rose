@@ -31,6 +31,7 @@ export class AppComponent {
   // raw data coming from the document service 
   rows$: Observable<TextRow[]>;
   sections$: Observable<Section[]>;
+  docId: string = "0"; // default doc id is "0", waiting store to provide one
 
   // combined observable to be used by the view
   lines$: Observable<Line[]>;
@@ -39,6 +40,9 @@ export class AppComponent {
     // get raw data
     this.rows$ = this.documentService.getRows();
     this.sections$ = this.documentService.getSections();
+
+    // monitor docId
+    this.documentService.getDocuments().subscribe( docs => { docs.map( d => { if (d.current == 'true') this.docId = d.id; } ); } );
 
     // combine these data into one single observable for display
     this.lines$ = Observable.combineLatest(
@@ -51,24 +55,24 @@ export class AppComponent {
     );
 
     // load all texts at startup
-    this.documentService.loadAllTexts();
+    // this.documentService.loadAllTexts();
 
   }
 
   addNewRow(i:number) {
-    this.documentService.addNewEmptyRow( 0 /* docId, ignored for now */, i /* line index */);
+    this.documentService.addNewEmptyRow( this.docId, i /* line index */);
   }
 
   deleteRow(i:number) {
-    this.documentService.deleteRow( 0 /* docId, ignored for now */, i /* line index */);
+    this.documentService.deleteRow( this.docId, i /* line index */);
   }
 
   updateText(id:string,content:string) {
-    this.documentService.updateText(id,content);
+    this.documentService.updateText(this.docId, id,content);
   }
   
   insertSection(id:string) {
-    this.documentService.insertSection( 0 /* docId, ignored for now */, id);
+    this.documentService.insertSection( this.docId, id);
   }
 
   dragEnd(event) { 
@@ -81,17 +85,17 @@ export class AppComponent {
 
   myDrop(target:Text,event) { 
     target.content = this.draggedText.text; 
-    this.documentService.updateText(this.draggedText.sourceId,'');
-    this.documentService.updateText(target.id,target.content);
+    this.documentService.updateText(this.docId, this.draggedText.sourceId,'');
+    this.documentService.updateText(this.docId, target.id,target.content);
     this.draggedText = { text: '', sourceId: '' } ;
   }
 
   updateSection(id,text) {
-    this.documentService.updateSection(id,text);
+    this.documentService.updateSection(this.docId, id,text);
   }
 
   deleteSection(id) {
-    this.documentService.deleteSection(id);
+    this.documentService.deleteSection(this.docId, id);
   }
 
 }

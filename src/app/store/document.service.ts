@@ -24,10 +24,11 @@ export const DocActionTypes = {
 	SECTION_CREATE: 		'[Section] createSection', 	// payload = Section 
 	SECTION_DELETE:			'[Section] deleteSection',	// payload = string
 	SECTION_UPDATE_TITLE:		'[Section] updateSection',	// payload = { textid, title }
+	DOCUMENT_LOAD_ALL: 		'[Document] loadAll',		// payload = Document[] 
+	SET_DEFAULT_DOC: 		'[Document] setDefault',	// payload = string ( =id ) 
+	DOCUMENT_CREATE: 		'[Document] create',		// payload = Document 
 
 	// future use
-	DOCUMENT_LOAD: 			'[Document] load',		// minimal payload = { id }
-	DOCUMENT_CREATE: 		'[Document] create',		// minimal payload = { } 
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
 	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
 
@@ -36,6 +37,30 @@ export const DocActionTypes = {
 /**
  ** REDUCERS
  **/
+
+const documentReducer : ActionReducer<Document[]> = (state: Document[] = [] , action: Action) => {
+  switch (action.type) {
+
+    case DocActionTypes.DOCUMENT_LOAD_ALL:
+	return action.payload ;  
+
+    case DocActionTypes.DOCUMENT_CREATE:
+	return [ ...state, Object.assign({},action.payload) ];
+
+    case DocActionTypes.SET_DEFAULT_DOC: 
+	return state.map( s => { 
+				if (s.id == action.payload ) 
+					  return Object.assign({},s,{current:'true'}); 
+					else 
+					  return Object.assign({},s,{current:'false'}); 
+				});
+
+    default: return state;
+
+  }
+
+}
+
 
 const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , action: Action) => {
   switch (action.type) {
@@ -103,7 +128,8 @@ const textReducer : ActionReducer<Text[]>  = (state: Text[] = [], action: Action
 
 const reducers = {
   texts: textReducer,
-  sections: sectionReducer
+  sections: sectionReducer,
+  documents: documentReducer,
 };
 
 const productionReducer = combineReducers(reducers);
@@ -120,6 +146,7 @@ export class DocumentService {
 
   texts$ : Observable<Text[]>;
   sections$ : Observable<Section[]>;
+  documents$ : Observable<Document[]>;
   rows$ : Observable<TextRow[]>;
 
   constructor( private http : Http, private store: Store<AppStore> ) { 
@@ -129,6 +156,7 @@ export class DocumentService {
 	//
 	this.texts$ = this.store.select('texts');	
 	this.sections$ = this.store.select('sections');
+	this.documents$ = this.store.select('documents');
 
 	//
 	// observable on text data, but reorganize individual texts into rows (from Text[] to TextRow[]) 
@@ -157,16 +185,49 @@ export class DocumentService {
 
   }	
 
-  //
-  // Initial text load, here on JSON server
-  //
-  loadAllTexts() {
 
-    this.http.get('/api/texts', HEADER)
+  //
+  // load documents and select then load the default one 
+  //
+  loadAllDocs() {
+
+    this.http.get('/api/doc/', HEADER)
+	.map( res => res.json() )
+	.subscribe( docs => { 
+				this.store.dispatch( { type: DocActionTypes.DOCUMENT_LOAD_ALL, payload: docs } );
+				docs.map( d => { if (d.current == 'true') { this.loadAllTexts( d.id ); }; });
+			    } );
+
+  }
+
+
+  // 
+  // create a new empty doc
+  //
+  newDoc() {
+    var docId = uuid();
+    let body = `{ "title": "new document", "id": ${JSON.stringify(docId)} }`;
+    let newDoc = { id: docId, title: "new document" };
+    this.http.post('/api/doc/' + docId, body, HEADER)
+	.map( res => res.json() )
+	.subscribe( doc => { 
+		this.store.dispatch( { type: DocActionTypes.DOCUMENT_CREATE, payload: newDoc } );
+  		this.addNewEmptyRow(docId, 0 /* current row */);
+		this.setDefaultDoc(docId);
+		this.loadAllTexts(docId);
+	  } ); 
+  }
+
+  //
+  // load document content 
+  //
+  loadAllTexts( docId: string ) {
+
+    this.http.get('/api/doc/' + docId + '/texts', HEADER)
 	.map( res => res.json() )
 	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.TEXT_LOAD_ALL, payload: texts } ) } ); 
 
-    this.http.get('/api/sections', HEADER)
+    this.http.get('/api/doc/' + docId + '/sections', HEADER)
 	.map( res => res.json() )
 	.subscribe( sections => { this.store.dispatch( { type: DocActionTypes.SECTION_LOAD_ALL, payload: sections } ) } ); 
   }
@@ -174,7 +235,7 @@ export class DocumentService {
   //
   // Add a new empty row (ie. 3 empty new Texts)
   //
-  addNewEmptyRow( docId: number, currentRow: number ) {
+  addNewEmptyRow( docId: string, currentRow: number ) {
 
     let row = currentRow;
 
@@ -190,7 +251,7 @@ export class DocumentService {
 
     let body = `[ ${body1}, ${body2}, ${body3} ]`;
 
-    this.http.post(`/api/rows/${row}`, body, HEADER)
+    this.http.post(`/api/doc/${docId}/rows/${row}`, body, HEADER)
 	.map( res => res.json() )
 	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.DOCUMENT_NEW_EMPTY_ROW, payload: { index: row, texts: newTexts } } ) } ); 
 
@@ -199,8 +260,8 @@ export class DocumentService {
   // 
   // delete a row
   //
-  deleteRow( docId: number, row: number) {
-    this.http.delete(`/api/rows/${row}`, HEADER)
+  deleteRow( docId: string, row: number) {
+    this.http.delete(`/api/doc/${docId}/rows/${row}`, HEADER)
 	.map( res => res.json() )
 	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.DOCUMENT_DELETE_ROW, payload: { index: row } } ) } ); 
   }
@@ -208,47 +269,57 @@ export class DocumentService {
   //
   // Update a text
   //
-  updateText( id: string, content: string ) {
+  updateText( docId: string, id: string, content: string ) {
     let body = `{ "content": ${JSON.stringify(content)} }`;
     console.log(body);
-    this.http.put(`/api/texts/${id}`, body, HEADER).subscribe(); 
+    this.http.put(`/api/doc/${docId}/texts/${id}`, body, HEADER).subscribe(); 
     this.store.dispatch( { type: DocActionTypes.TEXT_UPDATE, payload: { id: id, content: content } } ); 
   }
 
   // 
   // create a new (empty) section
   //
-  insertSection( docId: number, textId: string ) {
+  insertSection( docId: string, textId: string ) {
     var newSection = { docid: docId, starttextid: textId, title: 'Section' };
     var body = JSON.stringify(newSection);
-    this.http.post(`/api/sections`, body, HEADER).subscribe( res => this.store.dispatch( { type: DocActionTypes.SECTION_CREATE, payload: newSection } ) ); 
+    this.http.post(`/api/doc/${docId}/sections`, body, HEADER).subscribe( res => this.store.dispatch( { type: DocActionTypes.SECTION_CREATE, payload: newSection } ) ); 
   }
 
   //
   // Update a section title 
   //
-  updateSection( textid: string, title: string ) {
+  updateSection( docId: string, textid: string, title: string ) {
     let body = `{ "title": ${JSON.stringify(title)} }`;
     console.log(body);
-    this.http.put(`/api/sections/${textid}`, body, HEADER).subscribe(); 
+    this.http.put(`/api/doc/${docId}/sections/${textid}`, body, HEADER).subscribe(); 
     this.store.dispatch( { type: DocActionTypes.SECTION_UPDATE_TITLE, payload: { textid: textid, title: title } } ); 
   }
 
   // 
   // delete a section 
   //
-  deleteSection( starttextid: number) {
-    this.http.delete(`/api/sections/${starttextid}`, HEADER)
+  deleteSection( docId: string, starttextid: number) {
+    this.http.delete(`/api/doc/${docId}/sections/${starttextid}`, HEADER)
 	.map( res => res.json() )
 	.subscribe( sections => { this.store.dispatch( { type: DocActionTypes.SECTION_DELETE, payload: starttextid } ) } ); 
   }
 
+  //
+  // update current document
+  //
+  setDefaultDoc( docId: string ) {
+    console.log("about to change default document to:" + docId);
+    this.http.put(`/api/doc/${docId}/current`, '', HEADER).subscribe(); 
+    this.store.dispatch( { type: DocActionTypes.SET_DEFAULT_DOC, payload: docId } ); 
+  }
+  
   //
   // expose Observables to components
   //
   getTexts() : Observable<Text[]> { return this.texts$; }
   getRows() : Observable<TextRow[]> { return this.rows$; }
   getSections(): Observable<Section[]> { return this.sections$; }
+  getDocuments(): Observable<Document[]> { return this.documents$; }
 
 }
 

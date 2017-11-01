@@ -20,6 +20,7 @@ export interface Section {
 export interface Document {
  id : string;		// uuid
  title : string;	// title of the document
+ current: string;	// 'true' or 'false', if document is the current one
 }
 
 export interface TextRow {

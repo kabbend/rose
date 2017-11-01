@@ -2,7 +2,7 @@
 import { Text, Section, Document } from './document.model';
 
 export interface AppStore {
-  document: Document;
+  documents: Document[];
   sections: Section[];
   texts: Text[];
 }
