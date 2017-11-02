@@ -371,7 +371,7 @@ app.put("/api/doc/:docId", function(req, res) {
       done(); console.log(err);
       return res.status(500).json({success: false, data: err});
     }
-    client.query('UPDATE documents SET title=($1) WHERE docId = ($2);', [data.title, docId]);
+    client.query('UPDATE documents SET title=($1) WHERE id = ($2);', [data.title, docId]);
     done();
   });
   return res.status(200).json({success: true});

@@ -27,10 +27,10 @@ export const DocActionTypes = {
 	DOCUMENT_LOAD_ALL: 		'[Document] loadAll',		// payload = Document[] 
 	SET_DEFAULT_DOC: 		'[Document] setDefault',	// payload = string ( =id ) 
 	DOCUMENT_CREATE: 		'[Document] create',		// payload = Document 
+	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// payload = { id, title }
 
 	// future use
 	DOCUMENT_DELETE: 		'[Document] delete',		// minimal payload = id: string
-	DOCUMENT_UPDATE_TITLE:  	'[Document] updateTitle',	// minimal payload = { id, title }
 
 }
 
@@ -53,6 +53,14 @@ const documentReducer : ActionReducer<Document[]> = (state: Document[] = [] , ac
 					  return Object.assign({},s,{current:'true'}); 
 					else 
 					  return Object.assign({},s,{current:'false'}); 
+				});
+
+    case DocActionTypes.DOCUMENT_UPDATE_TITLE: 
+	return state.map( s => { 
+				if (s.id == action.payload.id) 
+					  return Object.assign({},s,{title:action.payload.title}); 
+					else 
+					  return s; 
 				});
 
     default: return state;
@@ -216,6 +224,15 @@ export class DocumentService {
 		this.setDefaultDoc(docId);
 		this.loadAllTexts(docId);
 	  } ); 
+  }
+
+  //
+  // Update a document title 
+  //
+  updateDocTitle( docId: string, title: string ) {
+    let body = `{ "title": ${JSON.stringify(title)} }`;
+    this.http.put(`/api/doc/${docId}/`, body, HEADER).subscribe(); 
+    this.store.dispatch( { type: DocActionTypes.DOCUMENT_UPDATE_TITLE, payload: { id: docId, title: title } } ); 
   }
 
   //

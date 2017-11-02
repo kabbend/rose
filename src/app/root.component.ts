@@ -9,17 +9,26 @@ import { DocumentService } from './store/document.service';
   template: `
 	<div class="ui segment" id="topmenu">
 	<div class="ui fixed inverted violet menu">
+
+	<!-- DOCUMENT DROPDOWN -->
     	<div class="ui inverted item">
 	  <section-dl (docSelect)="selectDoc($event)"></section-dl>
 	</div>
+
+	<!-- SECTIONS DROPDOWN -->
     	<div class="ui inverted item" *ngIf="thereAreSections" >
 	  <section-dd (scroll)="scroll($event)"></section-dd>
 	</div>
-	<div class="ui text menu">
-  	  <div class="ui inverted item">{{docTitle}}</div>
-	</div>
+
+	<!-- DOC TITLE INPUT -->
+ 	<div class="item">
+    	 <div class="ui labeled input" style="width:500px;" >
+		<div class="ui label">Document title:</div>
+      	 	<input type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
+    	 </div>
+  	</div>
+
     	<div class="right menu">
-      	<div class="item"> <a class="ui button">Modify</a> </div>
       	<div class="item"> <a class="ui positive button" (click)="newDoc()">New Document</a> </div>
       	<div class="item"> <a class="ui button">Log in</a> </div>
     	</div>
@@ -36,16 +45,24 @@ import { DocumentService } from './store/document.service';
 
 export class RootComponent implements OnInit {
 
-  thereAreSections: boolean = false;
-  docTitle: string = "loading...";
+  thereAreSections: boolean = false;	// dynamically check if there are sections to show
+  docTitle: string = "loading...";	// store current document title
+  docId: string = "0";			// store current document id
 
   constructor(private documentService : DocumentService, private element: ElementRef) { 
+
+	// thereAreSections is based on sections observable
 	this.documentService.getSections().subscribe( s => this.thereAreSections = (s.length != 0) );
-	this.documentService.getDocuments().subscribe( docs => docs.map( d => { if (d.current == 'true') this.docTitle = d.title; }) );
+
+	// title and id are based on documents observable
+	this.documentService.getDocuments().subscribe( docs => docs.map( d => { 
+			  if (d.current == 'true') { this.docTitle = d.title; this.docId = d.id; }
+			}) );
   }
 
   // 
-  // at first initialization, load all documents and default one from database
+  // at first initialization, load all documents from database
+  // this also sets the default one
   // 
   ngOnInit() {
     this.documentService.loadAllDocs();
@@ -77,6 +94,13 @@ export class RootComponent implements OnInit {
    this.documentService.newDoc();
   }
 
+
+  //
+  // change title of the current document
+  //
+  updateTitle( newTitle: string ) {
+   this.documentService.updateDocTitle( this.docId, newTitle );
+  }
 
 }
 
