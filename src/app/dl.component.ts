@@ -35,7 +35,10 @@ export class DocumentListComponent {
   }
 
   constructor(private documentService : DocumentService) { 
-    this.documents$ = this.documentService.getDocuments();
+    // get documents and sort them alphabetically
+    this.documents$ = this.documentService.getDocuments().map(
+	t => t.sort( (a,b) => { return (a.title < b.title) ? -1 : (a.title > b.title) ? 1 : 0; } )
+	);
   }
 
 }
