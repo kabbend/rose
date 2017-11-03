@@ -8,7 +8,7 @@ import { DocumentService } from './store/document.service';
 @Component({
   selector: 'section-dl',
   template: `
-	    <div class="ui simple dropdown item">
+	    <div class="ui simple dropdown item" style="overflow:visible;">
     	        Documents <i class="dropdown icon"></i>
     		<div class="menu">
       		  <div class="item" *ngFor="let document of documents$ | async" style="cursor: pointer" (click)="emitDocSelect(document.id)" >{{ document.title }}

@@ -7,18 +7,16 @@ import { DocumentService } from './store/document.service';
 @Component({
   selector: 'app-root',
   template: `
-	<div class="ui segment" id="topmenu">
+
+    <!-- MENU -->
+
 	<div class="ui fixed inverted violet menu">
 
 	<!-- DOCUMENT DROPDOWN -->
-    	<div class="ui inverted item">
-	  <section-dl (docSelect)="selectDoc($event)"></section-dl>
-	</div>
+    	<div class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
 
 	<!-- SECTIONS DROPDOWN -->
-    	<div class="ui inverted item" *ngIf="thereAreSections" >
-	  <section-dd (scroll)="scroll($event)"></section-dd>
-	</div>
+    	<div class="ui inverted item" *ngIf="thereAreSections" > <section-dd (scroll)="scroll($event)"></section-dd> </div>
 
 	<!-- DOC TITLE INPUT -->
  	<div class="item">
@@ -29,12 +27,22 @@ import { DocumentService } from './store/document.service';
   	</div>
 
     	<div class="right menu">
-      	<div class="item"> <a class="ui positive button" (click)="newDoc()">New Document</a> </div>
-      	<div class="item"> <a class="ui button">Log in</a> </div>
+      	  <div class="item"> <a class="ui primary button" (click)="newDoc()"><small>New Document</small></a> </div>
+      	  <div class="item"> <a class="ui button"><small>Log in</small></a> </div>
     	</div>
+
 	</div>
+
+    <!-- END OF MENU -->
+
+	<div class="ui inverted fixed blue menu" style="position:fixed;top:50px;overflow:hidden;z-index:+1;">
+    	<div class="item" style="width:34.65%;">INFOS</div>
+    	<div class="item" style="width:31.35%;">NARRATION</div>
+    	<div class="item" style="width:  33%;">EVENTS</div>
 	</div>
+
 	<rogse-app></rogse-app>
+
 	    `,
   styleUrls: ["../../node_modules/font-awesome/css/font-awesome.min.css",
     "../../node_modules/primeng/resources/primeng.min.css",
@@ -73,7 +81,7 @@ export class RootComponent implements OnInit {
   //
   scroll(id: string) {
         let elem = document.getElementById(id)
-	if (elem) { elem.scrollIntoView(); window.scrollBy(0,-70); }
+	if (elem) { elem.scrollIntoView(); window.scrollBy(0,-110); }
   }
 
   //
