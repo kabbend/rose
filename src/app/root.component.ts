@@ -1,8 +1,9 @@
 import { Component, OnInit, ElementRef }  from '@angular/core';
-import { Router }        from "@angular/router";
 
 import { AppComponent }    from './app.component';
 import { DocumentService } from './store/document.service';
+
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-root',
@@ -13,13 +14,13 @@ import { DocumentService } from './store/document.service';
 	<div class="ui fixed inverted violet menu">
 
 	<!-- DOCUMENT DROPDOWN -->
-    	<div class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
+    	<div *ngIf="authService.isAuthenticated()" class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
 
 	<!-- SECTIONS DROPDOWN -->
-    	<div class="ui inverted item" *ngIf="thereAreSections" > <section-dd (scroll)="scroll($event)"></section-dd> </div>
+    	<div *ngIf="authService.isAuthenticated() && thereAreSections" class="ui inverted item"> <section-dd (scroll)="scroll($event)"></section-dd> </div>
 
 	<!-- DOC TITLE INPUT -->
- 	<div class="item">
+ 	<div class="item" *ngIf="authService.isAuthenticated()">
     	 <div class="ui labeled input" style="width:500px;" >
 		<div class="ui label">Document title:</div>
       	 	<input type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
@@ -27,13 +28,16 @@ import { DocumentService } from './store/document.service';
   	</div>
 
     	<div class="right menu">
-      	  <div class="item"> <a class="ui primary button" (click)="newDoc()"><small>New Document</small></a> </div>
-      	  <div class="item"> <a class="ui button"><small>Log in</small></a> </div>
+      	  <div class="item" *ngIf="authService.isAuthenticated()"> <a class="ui primary button" (click)="newDoc()"><small>New Document</small></a> </div>
+      	  <div *ngIf="!authService.isAuthenticated()" class="item"> <a class="ui button" (click)="login()"><small>Log in</small></a> </div>
+      	  <div *ngIf="authService.isAuthenticated()" class="item"> <a class="ui button" (click)="logout()"><small>Log out</small></a> </div>
     	</div>
 
 	</div>
 
-    <!-- END OF MENU -->
+    <!-- END OF MENU, LINE 1 -->
+
+    <!-- MENU, LINE 2 -->
 
 	<div class="ui inverted fixed blue menu" style="position:fixed;top:50px;overflow:hidden;z-index:+1;">
     	<div class="item" style="width:34.65%;">INFOS</div>
@@ -41,7 +45,13 @@ import { DocumentService } from './store/document.service';
     	<div class="item" style="width:  33%;">EVENTS</div>
 	</div>
 
-	<rogse-app></rogse-app>
+    <!-- END OF MENU, LINE 2 -->
+
+	<div class="ui inverted teal segment" *ngIf="!authService.isAuthenticated()">
+		Please login to access your documents
+	</div>
+
+	<rogse-app *ngIf="authService.isAuthenticated()"></rogse-app>
 
 	    `,
   styleUrls: ["../../node_modules/font-awesome/css/font-awesome.min.css",
@@ -57,15 +67,25 @@ export class RootComponent implements OnInit {
   docTitle: string = "loading...";	// store current document title
   docId: string = "0";			// store current document id
 
-  constructor(private documentService : DocumentService, private element: ElementRef) { 
+  constructor(private documentService : DocumentService, private element: ElementRef, private authService: AuthService ) { 
 
-	// thereAreSections is based on sections observable
-	this.documentService.getSections().subscribe( s => this.thereAreSections = (s.length != 0) );
+	 authService.handleAuthentication();
 
-	// title and id are based on documents observable
-	this.documentService.getDocuments().subscribe( docs => docs.map( d => { 
+	 // thereAreSections is based on sections observable
+	 this.documentService.getSections().subscribe( s => this.thereAreSections = (s.length != 0) );
+
+	 // title and id are based on documents observable
+	 this.documentService.getDocuments().subscribe( docs => docs.map( d => { 
 			  if (d.current == 'true') { this.docTitle = d.title; this.docId = d.id; }
 			}) );
+  }
+
+  logout() {
+	this.authService.logout();
+  }
+
+  login() {
+	this.authService.login();
   }
 
   // 

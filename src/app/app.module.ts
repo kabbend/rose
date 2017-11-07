@@ -13,20 +13,24 @@ import { AppComponent } 		from './app.component';
 import { RootComponent } 		from './root.component';
 import { SectionDropDownComponent } 	from './dd.component';
 import { DocumentListComponent } 	from './dl.component';
+//import { CallbackComponent } 		from './callback.component';
 import { RoseTextarea } 		from './rose-textarea.directive';
 
 import { DocumentService, reducer } from './store/document.service';
+ 
+import { AuthService } from './auth.service';
+import { Routes, RouterModule } from '@angular/router';
 
-import {Routes, RouterModule} from "@angular/router";
-
-const routes: Routes = [
- { path: '', component: AppComponent },
+const appRoutes: Routes = [
+//  { path: 'callback', component: CallbackComponent },
+  { path: '', component: RootComponent },
 ];
 
 @NgModule({
   declarations: [
     RootComponent,
     AppComponent,
+//    CallbackComponent,
     SectionDropDownComponent,
     DocumentListComponent,
     Autosize,
@@ -40,9 +44,9 @@ const routes: Routes = [
     MarkdownModule,
     HttpModule,
     StoreModule.provideStore(reducer),
-    RouterModule.forRoot(routes, {useHash: true})
+    RouterModule.forRoot(appRoutes),
   ],
-  providers: [DocumentService],
+  providers: [DocumentService, AuthService],
   bootstrap: [RootComponent]
 })
 export class AppModule { }

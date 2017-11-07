@@ -1,8 +1,19 @@
+//
+// ROGSE SERVER
+//
+
+//
+// APP EXPRESS DECLARATION
+//
+
 var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
 
-// postgreSQL
+//
+// INITIALIZE DATABASE : postgreSQL
+//
+
 var pg = require('pg');
 var Transaction = require('pg-transaction');
  
@@ -22,6 +33,20 @@ function handleError(res, reason, message, code) {
   console.log("ERROR: " + reason);
   res.status(code || 500).json({"error": message});
 };
+
+//
+// special route for auth0 authentication callback
+//
+app.get(
+  '/callback',
+  function(req, res) {
+    res.redirect('/');
+  }
+);
+
+//
+// herebelow starts the REST API
+//
 
 //
 // GET  /api/doc/:docId/texts		return all texts of the given document
