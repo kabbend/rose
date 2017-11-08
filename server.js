@@ -37,16 +37,6 @@ function handleError(res, reason, message, code) {
 };
 
 //
-// special route for auth0 authentication callback
-//
-app.get(
-  '*',
-  function(req, res) {
-    res.render(distDir + 'index.html')
-  }
-);
-
-//
 // herebelow starts the REST API
 //
 
@@ -404,4 +394,14 @@ app.put("/api/doc/:docId", function(req, res) {
   return res.status(200).json({success: true});
 
 });
+
+//
+// special route for auth0 authentication callback
+//
+app.get(
+  '*',
+  function(req, res) {
+    res.render(distDir + 'index.html')
+  }
+);
 
