@@ -40,7 +40,7 @@ function handleError(res, reason, message, code) {
 // special route for auth0 authentication callback
 //
 app.get(
-  '/callback',
+  '*',
   function(req, res) {
     res.render(distDir + 'index.html')
   }
