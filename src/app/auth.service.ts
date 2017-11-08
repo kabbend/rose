@@ -67,5 +67,9 @@ export class AuthService {
     return new Date().getTime() < expiresAt;
   }
 
+  public getUserEmail(): string {
+    return localStorage['auth0_email']; 
+  }
+
 }
 
