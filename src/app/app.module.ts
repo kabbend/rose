@@ -13,7 +13,7 @@ import { AppComponent } 		from './app.component';
 import { RootComponent } 		from './root.component';
 import { SectionDropDownComponent } 	from './dd.component';
 import { DocumentListComponent } 	from './dl.component';
-//import { CallbackComponent } 		from './callback.component';
+import { CallbackComponent } 		from './callback.component';
 import { RoseTextarea } 		from './rose-textarea.directive';
 
 import { DocumentService, reducer } from './store/document.service';
@@ -22,15 +22,16 @@ import { AuthService } from './auth.service';
 import { Routes, RouterModule } from '@angular/router';
 
 const appRoutes: Routes = [
-//  { path: 'callback', component: CallbackComponent },
-  { path: '', component: RootComponent },
+  { path: 'home', component: AppComponent },
+  { path: 'callback', component: CallbackComponent },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
 ];
 
 @NgModule({
   declarations: [
     RootComponent,
     AppComponent,
-//    CallbackComponent,
+    CallbackComponent,
     SectionDropDownComponent,
     DocumentListComponent,
     Autosize,

@@ -8,6 +8,7 @@ import { DragDropModule} from 'primeng/primeng';
 import { Autosize } 	 from './autosize.directive';
 
 import { DocumentService } from './store/document.service';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'rogse-app',
@@ -34,7 +35,7 @@ export class AppComponent {
   // combined observable to be used by the view
   lines$: Observable<Line[]>;
 
-  constructor(private documentService : DocumentService ) {
+  constructor(private documentService : DocumentService, private authService: AuthService ) {
     // get raw data
     this.rows$ = this.documentService.getRows();
     this.sections$ = this.documentService.getSections();
@@ -55,6 +56,10 @@ export class AppComponent {
     // load all texts at startup
     // this.documentService.loadAllTexts();
 
+  }
+
+  login() {
+    this.authService.login();
   }
 
   addNewRow(i:number) {

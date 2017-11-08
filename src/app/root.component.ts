@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef }  from '@angular/core';
 
 import { AppComponent }    from './app.component';
+import { CallbackComponent }    from './callback.component';
 import { DocumentService } from './store/document.service';
 
 import { AuthService } from './auth.service';
@@ -47,11 +48,7 @@ import { AuthService } from './auth.service';
 
     <!-- END OF MENU, LINE 2 -->
 
-	<div class="ui inverted teal segment" *ngIf="!authService.isAuthenticated()">
-		Please login to access your documents
-	</div>
-
-	<rogse-app *ngIf="authService.isAuthenticated()"></rogse-app>
+	<router-outlet></router-outlet>
 
 	    `,
   styleUrls: ["../../node_modules/font-awesome/css/font-awesome.min.css",

@@ -10,6 +10,8 @@ var express = require("express");
 var bodyParser = require("body-parser");
 var app = express();
 
+app.engine('html', require('ejs').renderFile);
+
 //
 // INITIALIZE DATABASE : postgreSQL
 //
@@ -40,7 +42,7 @@ function handleError(res, reason, message, code) {
 app.get(
   '/callback',
   function(req, res) {
-    res.redirect('/');
+    res.render(distDir + 'index.html')
   }
 );
 

@@ -1,4 +1,9 @@
-<div class="ui divided list" style="position:relative;top:100px;">
+<h4 class="ui center aligned header" style="position:relative;top:200px;" *ngIf="!authService.isAuthenticated()">
+                <p>Please login to access to your documents<p>
+                <div><a class="ui primary button" (click)="login()">Log in</a></div>
+</h4>
+
+<div *ngIf="authService.isAuthenticated()" class="ui divided list" style="position:relative;top:100px;">
  <!-- LIST OF ROWS -->          
  <div class="item" *ngFor="let line of lines$ | async; let i = index">
 	<!-- SECTION -->

@@ -14,7 +14,7 @@ export class AuthService {
     responseType: 'token id_token',
     audience: 'https://fast-atoll-61488.auth0.com/userinfo',
     redirectUri: environment.CALLBACK_URL,      
-    scope: 'openid'
+    scope: 'openid email'
   });
 
   constructor( public router: Router ) {}
@@ -30,7 +30,7 @@ export class AuthService {
         this.setSession(authResult);
         this.router.navigate(['/']);
       } else if (err) {
-        this.router.navigate(['/error']);
+        this.router.navigate(['/']);
         console.log(err);
       }
     });
@@ -39,10 +39,11 @@ export class AuthService {
   private setSession(authResult): void {
     // Set the time that the access token will expire at
     const expiresAt = JSON.stringify((authResult.expiresIn * 1000) + new Date().getTime());
-    console.log("setting session with id " + authResult.idToken + " & expire " + expiresAt );
+    console.log("setting session with email " + authResult.idTokenPayload.email );
     localStorage.setItem('access_token', authResult.accessToken);
     localStorage.setItem('id_token', authResult.idToken);
     localStorage.setItem('auth0_expires_at', expiresAt);
+    localStorage.setItem('auth0_email', authResult.idTokenPayload.email);
   }
 
   public logout(): void {
@@ -50,15 +51,19 @@ export class AuthService {
     localStorage.removeItem('access_token');
     localStorage.removeItem('id_token');
     localStorage.removeItem('auth0_expires_at');
+    localStorage.removeItem('auth0_email');
     // Go back to the home route
     this.router.navigate(['/']);
   }
 
   public isAuthenticated(): boolean {
-    // Check whether the current time is past the
-    // access token's expiry time
+    var email = localStorage['auth0_email']; 
+    console.log(email);
+    // Check whether the current email is set 
+    if (email == null || email === undefined || email == 'undefined') return false;
+    // Check whether the current time is past the access token's expiry time
     const expiresAt = JSON.parse(localStorage.getItem('auth0_expires_at'));
-    console.log("isAuth called, response " + expiresAt );
+    console.log("isAuth called, response " + expiresAt + " for " + email);
     return new Date().getTime() < expiresAt;
   }
 
