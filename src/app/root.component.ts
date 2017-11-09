@@ -10,9 +10,16 @@ import { AuthService } from './auth.service';
   selector: 'app-root',
   template: `
 
+	<span style="position:fixed;top:15px;left:15px;z-index:1000;">
+	<img src="favicon.png" style="width:60px;height:60px;">
+	</span>
+
     <!-- MENU -->
 
-	<div class="ui fixed inverted violet menu">
+	<div class="ui small fixed inverted violet menu">
+
+    	<div class="ui inverted item"> &nbsp;&nbsp; </div>
+    	<div class="ui inverted item"> &nbsp;&nbsp; </div>
 
 	<!-- DOCUMENT DROPDOWN -->
     	<div *ngIf="authService.isAuthenticated() && thereAreDocuments" class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
