@@ -197,10 +197,12 @@ export class DocumentService {
   //
   // load documents and select then load the default one 
   //
-  loadAllDocs() {
+  loadAllDocs( username: string ) {
 
-    this.http.get('/api/doc/', HEADER)
-	.map( res => res.json() )
+    console.log("call loadAllDocs(" + username + ")");
+
+    this.http.get('/api/doc/user/' + username, HEADER)
+	.map( res => { var r = res.json(); console.log(r); return r; } )
 	.subscribe( docs => { 
 				this.store.dispatch( { type: DocActionTypes.DOCUMENT_LOAD_ALL, payload: docs } );
 				docs.map( d => { if (d.current == 'true') { this.loadAllTexts( d.id ); }; });
@@ -210,12 +212,12 @@ export class DocumentService {
 
 
   // 
-  // create a new empty doc
+  // create a new empty doc for a given user
   //
-  newDoc() {
+  newDoc( username: string ) {
     var docId = uuid();
-    let body = `{ "title": "new document", "id": ${JSON.stringify(docId)} }`;
-    let newDoc = { id: docId, title: "new document" };
+    let body = `{ "title": "new document", "id": ${JSON.stringify(docId)}, "username": ${JSON.stringify(username)} }`;
+    let newDoc = { id: docId, title: "new document", username: username };
     this.http.post('/api/doc/' + docId, body, HEADER)
 	.map( res => res.json() )
 	.subscribe( doc => { 

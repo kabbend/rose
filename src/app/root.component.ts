@@ -15,13 +15,13 @@ import { AuthService } from './auth.service';
 	<div class="ui fixed inverted violet menu">
 
 	<!-- DOCUMENT DROPDOWN -->
-    	<div *ngIf="authService.isAuthenticated()" class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
+    	<div *ngIf="authService.isAuthenticated() && thereAreDocuments" class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
 
 	<!-- SECTIONS DROPDOWN -->
     	<div *ngIf="authService.isAuthenticated() && thereAreSections" class="ui inverted item"> <section-dd (scroll)="scroll($event)"></section-dd> </div>
 
 	<!-- DOC TITLE INPUT -->
- 	<div class="item" *ngIf="authService.isAuthenticated()">
+ 	<div class="item" *ngIf="authService.isAuthenticated() && thereAreDocuments">
     	 <div class="ui labeled input" style="width:500px;" >
 		<div class="ui label">Document title:</div>
       	 	<input type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
@@ -64,19 +64,32 @@ import { AuthService } from './auth.service';
 export class RootComponent implements OnInit {
 
   thereAreSections: boolean = false;	// dynamically check if there are sections to show
+  thereAreDocuments: boolean = false;	// dynamically check if there are documents to show
   docTitle: string = "loading...";	// store current document title
   docId: string = "0";			// store current document id
 
   constructor(private documentService : DocumentService, private element: ElementRef, private authService: AuthService ) { 
 
-	 authService.handleAuthentication();
+	 if (this.authService.isAuthenticated()) {
+	  // we already have a user logged in. Load all its docs...
+	  this.documentService.loadAllDocs( this.authService.getUserEmail() ); 
+	 } 
+	 else
+	 {
+	  // treat authentication (asynchronously) and provide appropriate callback to load docs
+	  // when we know the user...
+	  authService.handleAuthentication(  () => { 
+		  console.log("calling loadAllDocs now");
+		  this.documentService.loadAllDocs( this.authService.getUserEmail() ); 
+	        } );
+	 }
 
 	 // thereAreSections is based on sections observable
 	 this.documentService.getSections().subscribe( s => this.thereAreSections = (s.length != 0) );
 
-	 // title and id are based on documents observable
+	 // title and id and thereAreDocuments are based on documents observable
 	 this.documentService.getDocuments().subscribe( docs => docs.map( d => { 
-			  if (d.current == 'true') { this.docTitle = d.title; this.docId = d.id; }
+			  if (d.current == 'true') { this.docTitle = d.title; this.docId = d.id; this.thereAreDocuments = true; }
 			}) );
   }
 
@@ -88,12 +101,14 @@ export class RootComponent implements OnInit {
 	this.authService.login();
   }
 
-  // 
+  //
+  // deprecated 
   // at first initialization, load all documents from database
   // this also sets the default one
   // 
   ngOnInit() {
-    this.documentService.loadAllDocs();
+    //console.log("username " + this.authService.getUserEmail());
+    //if (this.authService.isAuthenticated()) this.documentService.loadAllDocs();
   }
 
   //
@@ -119,7 +134,7 @@ export class RootComponent implements OnInit {
   // this will make it the default, and load it at the same time
   //
   newDoc() {
-   this.documentService.newDoc();
+   this.documentService.newDoc( this.authService.getUserEmail() );
   }
 
 

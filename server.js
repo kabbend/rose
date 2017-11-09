@@ -296,11 +296,37 @@ app.delete("/api/doc/:docId/sections/:id", function(req, res) {
 
 //
 // GET     /api/doc/			retrieve all documents
+// GET     /api/doc/user/:user		retrieve all documents for a given user
 // POST    /api/doc/:docId 		create a new document	
 // PUT     /api/doc/:docId 		update a document title	
 // PUT     /api/doc/:docId/current 	set the document as current (and all others as not current)	
 //
 
+app.get("/api/doc/user/:username", function(req, res) {
+
+  const results = [];
+
+  // Grab data from the URL parameters
+  const username = req.params.username;
+
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    console.log('SELECT * FROM documents WHERE username = (' + username + ');');
+    const query = client.query('SELECT * FROM documents WHERE username = ($1);', [username]);
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    query.on('end', () => {
+      done();
+      return res.json(results);
+    });
+  });
+});
+
+// deprecated
 app.get("/api/doc/", function(req, res) {
   const results = [];
   pg.connect(process.env.DATABASE_URL, (err, client, done) => {
@@ -324,15 +350,15 @@ app.post("/api/doc/:docId", function(req, res) {
   // Grab data from the URL parameters
   const docId = req.params.docId;
 
-  var newDoc = { title: req.body.title || 'new document' , id: docId };
+  var newDoc = { title: req.body.title || 'new document' , id: docId,  username: req.body.username || '' };
 
   pg.connect(process.env.DATABASE_URL, (err, client, done) => {
     if(err) {
       done(); console.log(err);
       return res.status(500).json({success: false, data: err});
     }
-    client.query('INSERT INTO documents(title, id) values($1, $2);',
-    [newDoc.title, docId]);
+    client.query('INSERT INTO documents(title, id, username) values($1, $2, $3);',
+    [newDoc.title, docId, newDoc.username]);
     done();
   });
   return res.status(200).json({success: true});
@@ -355,8 +381,8 @@ app.put("/api/doc/:docId/current/", function(req, res) {
 
     tx.begin();
 
-    const q2 = 'UPDATE documents SET current = (false);';
-    tx.query(q2,[]);
+    const q2 = 'UPDATE documents SET current = (false) WHERE username IN (SELECT username FROM documents WHERE id = ($1));';
+    tx.query(q2,[docId]);
 
     const q3 = 'UPDATE documents SET current = (true) where id = ($1);';
     tx.query(q3,[docId]);

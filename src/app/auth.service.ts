@@ -23,12 +23,14 @@ export class AuthService {
     this.auth0.authorize();
   }
 
-  public handleAuthentication(): void {
+  public handleAuthentication( callback? ): void {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         window.location.hash = '';
         this.setSession(authResult);
         this.router.navigate(['/']);
+	console.log("calling callback...");
+	if (callback) callback();
       } else if (err) {
         this.router.navigate(['/']);
         console.log(err);
@@ -58,12 +60,10 @@ export class AuthService {
 
   public isAuthenticated(): boolean {
     var email = localStorage['auth0_email']; 
-    console.log(email);
     // Check whether the current email is set 
     if (email == null || email === undefined || email == 'undefined') return false;
     // Check whether the current time is past the access token's expiry time
     const expiresAt = JSON.parse(localStorage.getItem('auth0_expires_at'));
-    console.log("isAuth called, response " + expiresAt + " for " + email);
     return new Date().getTime() < expiresAt;
   }
 
