@@ -44,9 +44,9 @@ import { AuthService } from './auth.service';
     <!-- MENU, LINE 2 -->
 
 	<div class="ui inverted fixed blue menu" style="position:fixed;top:50px;overflow:hidden;z-index:+1;">
-    	<div class="item" style="width:34.65%;">INFOS</div>
-    	<div class="item" style="width:31.35%;">NARRATION</div>
-    	<div class="item" style="width:  33%;">EVENTS</div>
+    	<div class="item" style="width:34.65%;"><div class="ui container center aligned">INFOS</div></div>
+    	<div class="item" style="width:31.35%;"><div class="ui container center aligned">NARRATION</div></div>
+    	<div class="item" style="width:  33%;"> <div class="ui container center aligned">EVENTS</div></div>
 	</div>
 
     <!-- END OF MENU, LINE 2 -->
@@ -101,14 +101,8 @@ export class RootComponent implements OnInit {
 	this.authService.login();
   }
 
-  //
   // deprecated 
-  // at first initialization, load all documents from database
-  // this also sets the default one
-  // 
   ngOnInit() {
-    //console.log("username " + this.authService.getUserEmail());
-    //if (this.authService.isAuthenticated()) this.documentService.loadAllDocs();
   }
 
   //
