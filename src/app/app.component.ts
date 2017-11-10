@@ -9,6 +9,7 @@ import { Autosize } 	 from './autosize.directive';
 
 import { DocumentService } from './store/document.service';
 import { AuthService } from './auth.service';
+import { LoaderService } from './loader.service';
 
 @Component({
   selector: 'rogse-app',
@@ -35,7 +36,7 @@ export class AppComponent {
   // combined observable to be used by the view
   lines$: Observable<Line[]>;
 
-  constructor(private documentService : DocumentService, private authService: AuthService ) {
+  constructor(private documentService : DocumentService, private authService: AuthService, private loaderService: LoaderService ) {
     // get raw data
     this.rows$ = this.documentService.getRows();
     this.sections$ = this.documentService.getSections();

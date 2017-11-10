@@ -8,6 +8,8 @@ import { uuid } from '../util/uuid';
 import { Text, TextRow, Section, Document } from './document.model';
 import { AppStore } from './app.store';
 
+import { LoaderService } from '../loader.service';
+
 const HEADER = { headers: new Headers({ 'cache': 'false', 'Content-Type': 'application/json' }) };
 
 /**
@@ -157,7 +159,7 @@ export class DocumentService {
   documents$ : Observable<Document[]>;
   rows$ : Observable<TextRow[]>;
 
-  constructor( private http : Http, private store: Store<AppStore> ) { 
+  constructor( private http : Http, private store: Store<AppStore>, private loaderService: LoaderService ) { 
 
 	//
 	// observable on the raw text data
@@ -244,7 +246,7 @@ export class DocumentService {
 
     this.http.get('/api/doc/' + docId + '/texts', HEADER)
 	.map( res => res.json() )
-	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.TEXT_LOAD_ALL, payload: texts } ) } ); 
+	.subscribe( texts => { this.store.dispatch( { type: DocActionTypes.TEXT_LOAD_ALL, payload: texts } ); this.loaderService.stop(); } ); 
 
     this.http.get('/api/doc/' + docId + '/sections', HEADER)
 	.map( res => res.json() )

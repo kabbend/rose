@@ -5,6 +5,7 @@ import { CallbackComponent }    from './callback.component';
 import { DocumentService } from './store/document.service';
 
 import { AuthService } from './auth.service';
+import { LoaderService } from './loader.service';
 
 @Component({
   selector: 'app-root',
@@ -75,7 +76,7 @@ export class RootComponent implements OnInit {
   docTitle: string = "loading...";	// store current document title
   docId: string = "0";			// store current document id
 
-  constructor(private documentService : DocumentService, private element: ElementRef, private authService: AuthService ) { 
+  constructor(private documentService : DocumentService, private element: ElementRef, private authService: AuthService, private loaderService: LoaderService ) { 
 
 	 if (this.authService.isAuthenticated()) {
 	  // we already have a user logged in. Load all its docs...
@@ -124,6 +125,7 @@ export class RootComponent implements OnInit {
   // On Doc select in the dropdown, store it as new default and load it
   //
   selectDoc(docId: string) {
+    this.loaderService.start();
     // set selected doc in the store, for all other components
     this.documentService.setDefaultDoc(docId);
     // reload all texts & sections

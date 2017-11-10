@@ -19,6 +19,7 @@ import { RoseTextarea } 		from './rose-textarea.directive';
 import { DocumentService, reducer } from './store/document.service';
  
 import { AuthService } from './auth.service';
+import { LoaderService } from './loader.service';
 import { Routes, RouterModule } from '@angular/router';
 
 const appRoutes: Routes = [
@@ -47,7 +48,7 @@ const appRoutes: Routes = [
     StoreModule.provideStore(reducer),
     RouterModule.forRoot(appRoutes),
   ],
-  providers: [DocumentService, AuthService],
+  providers: [DocumentService, AuthService, LoaderService],
   bootstrap: [RootComponent]
 })
 export class AppModule { }

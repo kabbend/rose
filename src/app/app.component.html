@@ -1,3 +1,10 @@
+
+<div class="ui active dimmer" *ngIf="loaderService.isLoading()">
+    <div class="ui large text loader">
+		Please wait while setting your session...
+  </div>
+</div>
+
 <h4 class="ui center aligned header" style="position:relative;top:200px;" *ngIf="!authService.isAuthenticated()">
                 <p>Please login to access to your documents<p>
                 <div><a class="ui primary button" (click)="login()">Log in</a></div>
