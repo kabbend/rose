@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
 
     <!-- MENU -->
 
-	<div class="ui small fixed inverted violet menu">
+	<div class="ui small fixed inverted violet borderless menu">
 
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
