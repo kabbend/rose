@@ -74,7 +74,17 @@ export class AppComponent {
   updateText(id:string,content:string) {
     this.documentService.updateText(this.docId, id,content);
   }
-  
+ 
+  updateIfChanged( t: TextRow, col: number ) { 
+    if (t.dirty[col]) {
+	t.dirty[col] = false;
+	console.log("REQ update, was dirty, DONE");
+	this.updateText( t.line[col].id, t.line[col].content );
+    } else {
+	console.log("REQ but text was not dirty");
+    }
+  }
+ 
   insertSection(id:string) {
     this.documentService.insertSection( this.docId, id);
   }

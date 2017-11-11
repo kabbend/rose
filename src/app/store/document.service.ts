@@ -190,7 +190,7 @@ export class DocumentService {
 						[] ))
 				.map(
 					// compute uuid on each row
-					res => res.map( row =>  { return { id: `${row.line[0].id}${row.line[1].id}${row.line[2].id}` , line: row.line } as TextRow } ) 
+					res => res.map( row =>  { return { id: uuid() , line: row.line, dirty: [false,false,false] } as TextRow } ) 
 				);
 
   }	

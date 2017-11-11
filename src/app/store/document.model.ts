@@ -7,7 +7,6 @@ export interface Text {
  content : string;	// actual text content
  row: number;		// index in the timeline (starting at 0)
  col: number;		// index column (starting at 0)
- 
 }
 
 export interface Section {
@@ -26,6 +25,7 @@ export interface Document {
 export interface TextRow {
   id: string;		// uuid
   line: Text[];		// array of (three) Texts
+  dirty: boolean[];	// flag if text changed
 }
 
 export interface Line {

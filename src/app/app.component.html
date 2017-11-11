@@ -33,8 +33,10 @@
 		  <div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
 		  <div class="five wide column">
         	  	<textarea rosetextarea class="rose-textarea" 
-			autosize (focusOnMe)="$event.focus()" (blur)="currentEdition=-1;updateText(line.text.line[0].id,line.text.line[0].content)" 
-			[(ngModel)]="line.text.line[0].content"> </textarea>
+			autosize (focusOnMe)="$event.focus()" 
+			(blur)="currentEdition=-1; updateIfChanged(line.text,0)" 
+			[ngModel]="line.text.line[0].content"
+			(ngModelChange)="line.text.line[0].content=$event;line.text.dirty[0]=true"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId0 > 
@@ -51,8 +53,9 @@
           	<ng-template #textareaId1 > 
 		  <div class="five wide column">
         	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()"
-(blur)="currentEdition=-1;updateText(line.text.line[1].id,line.text.line[1].content)"
-			[(ngModel)]="line.text.line[1].content"> </textarea>
+			(blur)="currentEdition=-1; updateIfChanged(line.text,1)" 
+			[ngModel]="line.text.line[1].content"
+			(ngModelChange)="line.text.line[1].content=$event;line.text.dirty[1]=true"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId1 > 
@@ -70,9 +73,10 @@
           	<ng-template #textareaId2 > 
 		  <div class="four wide column">
         	  	<textarea rosetextarea class="rose-textarea" autosize (focusOnMe)="$event.focus()"
-(blur)="currentEdition=-1;updateText(line.text.line[2].id,line.text.line[2].content)"
 			(keydown.Tab)="addNewRow(i+1)"
-			[(ngModel)]="line.text.line[2].content"> </textarea>
+			(blur)="currentEdition=-1; updateIfChanged(line.text,2)" 
+			[ngModel]="line.text.line[2].content"
+			(ngModelChange)="line.text.line[2].content=$event;line.text.dirty[2]=true"> </textarea>
 		  </div>
       		</ng-template>
       		<ng-template #markdownId2 > 
