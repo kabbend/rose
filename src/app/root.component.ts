@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef }  from '@angular/core';
+import { HostListener, Component, OnInit, ElementRef }  from '@angular/core';
 
 import { AppComponent }    from './app.component';
 import { CallbackComponent }    from './callback.component';
@@ -11,13 +11,13 @@ import { LoaderService } from './loader.service';
   selector: 'app-root',
   template: `
 
-	<span style="position:fixed;top:15px;left:15px;z-index:1000;">
+	<span id="rogse-favicon" style="position:fixed;top:15px;left:15px;z-index:1000;" >
 	<img src="favicon.png" style="width:60px;height:60px;">
 	</span>
 
     <!-- MENU -->
 
-	<div class="ui small fixed inverted violet borderless menu">
+	<div id="rogse-menu" class="ui small fixed inverted violet borderless menu">
 
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
@@ -51,7 +51,7 @@ import { LoaderService } from './loader.service';
 
     <!-- MENU, LINE 2 -->
 
-	<div class="ui inverted fixed blue menu" style="position:fixed;top:50px;overflow:hidden;z-index:+1;">
+	<div id="rogse-menu-2" class="ui inverted fixed blue menu" style="position:fixed;top:50px;overflow:hidden;z-index:+1;">
     	<div class="item" style="width:34.65%;"><div class="ui container center aligned">INFOS</div></div>
     	<div class="item" style="width:31.35%;"><div class="ui container center aligned">NARRATION</div></div>
     	<div class="item" style="width:  33%;"> <div class="ui container center aligned">EVENTS</div></div>
@@ -75,7 +75,39 @@ export class RootComponent implements OnInit {
   thereAreDocuments: boolean = false;	// dynamically check if there are documents to show
   docTitle: string = "loading...";	// store current document title
   docId: string = "0";			// store current document id
+  scrollY: number = 0;			// store current page scroll in px
+  menu_top: number = 0;
  
+  //
+  // detect and store page scroll
+  //
+  @HostListener('window:scroll', ['$event'])
+  onScroll($event){
+    this.scrollY = $event.target.scrollingElement.scrollTop;
+    if (this.scrollY > 300) 
+	{ 
+		var offset = (300 - this.scrollY) / 8 ;
+		this.menu_top = offset; 
+		let elem1 = document.getElementById("rogse-favicon");
+		let elem2 = document.getElementById("rogse-menu");
+		let elem3 = document.getElementById("rogse-menu-2");
+		elem1.style.marginTop=this.menu_top+'px';
+		elem2.style.marginTop=this.menu_top+'px';
+		if (offset < -50) { elem3.style.marginTop = '-50px'; } else { elem3.style.marginTop = this.menu_top+'px'; }
+	}
+	else
+	{ 
+		this.menu_top = 0; 
+		let elem1 = document.getElementById("rogse-favicon");
+		let elem2 = document.getElementById("rogse-menu");
+		let elem3 = document.getElementById("rogse-menu-2");
+		elem1.style.marginTop=this.menu_top+'px';
+		elem2.style.marginTop=this.menu_top+'px';
+		elem3.style.marginTop=this.menu_top+'px';
+	}
+
+  }
+
   constructor(private documentService : DocumentService, private element: ElementRef, private authService: AuthService, private loaderService: LoaderService ) { 
 
 	 if (this.authService.isAuthenticated()) {
