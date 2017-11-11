@@ -75,7 +75,7 @@ export class RootComponent implements OnInit {
   thereAreDocuments: boolean = false;	// dynamically check if there are documents to show
   docTitle: string = "loading...";	// store current document title
   docId: string = "0";			// store current document id
-
+ 
   constructor(private documentService : DocumentService, private element: ElementRef, private authService: AuthService, private loaderService: LoaderService ) { 
 
 	 if (this.authService.isAuthenticated()) {
@@ -125,9 +125,16 @@ export class RootComponent implements OnInit {
   // On Doc select in the dropdown, store it as new default and load it
   //
   selectDoc(docId: string) {
-    this.loaderService.start();
+
+    // start spinner, after getting back to top of page 
+    // it will be stopped asynchronously when all texts are loaded
+    let elem = document.getElementById('top-of-page');
+    if (elem) { elem.scrollIntoView(); }
+    this.loaderService.start(); 
+
     // set selected doc in the store, for all other components
     this.documentService.setDefaultDoc(docId);
+
     // reload all texts & sections
     this.documentService.loadAllTexts(docId);
   }
