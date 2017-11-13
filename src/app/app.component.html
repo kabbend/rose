@@ -12,7 +12,7 @@
                 <div><a class="ui primary button" (click)="login()">Log in</a></div>
 </h4>
 
-<div *ngIf="authService.isAuthenticated()" class="ui divided list" style="position:relative;top:100px;">
+<div *ngIf="authService.isAuthenticated()" class="ui divided list" style="position:relative;top:130px;">
  <!-- LIST OF ROWS -->          
  <div class="item" *ngFor="let line of lines$ | async; let i = index">
 	<!-- SECTION -->
@@ -93,3 +93,4 @@
 	</div> <!-- END OF GRID -->
     </div> <!-- end of list -->
 </div>
+

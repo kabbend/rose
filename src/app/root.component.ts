@@ -17,7 +17,7 @@ import { LoaderService } from './loader.service';
 
     <!-- MENU -->
 
-	<div id="rogse-menu" class="ui small fixed inverted violet borderless menu">
+	<div id="rogse-menu" class="ui small fixed inverted violet borderless menu" style="height:70px">
 
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
@@ -27,14 +27,6 @@ import { LoaderService } from './loader.service';
 
 	<!-- SECTIONS DROPDOWN -->
     	<div *ngIf="authService.isAuthenticated() && thereAreSections" class="ui inverted item"> <section-dd (scroll)="scroll($event)"></section-dd> </div>
-
-	<!-- DOC TITLE INPUT -->
- 	<div class="item" *ngIf="authService.isAuthenticated() && thereAreDocuments">
-    	 <div class="ui labeled input" style="width:500px;" >
-		<div class="ui label">Document title:</div>
-      	 	<input type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
-    	 </div>
-  	</div>
 
 	<!-- NEW DOC -->
         <div class="item" *ngIf="authService.isAuthenticated()"> <a class="ui primary button" (click)="newDoc()"><small>New Document</small></a> </div>
@@ -47,17 +39,27 @@ import { LoaderService } from './loader.service';
 
 	</div>
 
-    <!-- END OF MENU, LINE 1 -->
+    <!-- LINE 2 -->
 
-    <!-- MENU, LINE 2 -->
-
-	<div id="rogse-menu-2" class="ui inverted fixed blue menu" style="position:fixed;top:50px;overflow:hidden;z-index:+1;">
-    	<div class="item" style="width:34.65%;"><div class="ui container center aligned">INFOS</div></div>
-    	<div class="item" style="width:31.35%;"><div class="ui container center aligned">NARRATION</div></div>
-    	<div class="item" style="width:  33%;"> <div class="ui container center aligned">EVENTS</div></div>
+	<div id="rogse-menu-3" class="ui inverted fixed blue menu" style="position:fixed;top:70px;overflow:hidden;z-index:+2;">
+    	  <div class="item" style="width:100%;height:20px;"> 
+		<div class="ui container center aligned" style="width:100%;" *ngIf="authService.isAuthenticated() && thereAreDocuments">
+		  <div class="ui transparent input" style="width:100%;">
+                     <input style="text-align:center;" type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
+         	  </div>
+		</div>
+	  </div>
 	</div>
 
-    <!-- END OF MENU, LINE 2 -->
+    <!-- LINE 3 -->
+
+	<div id="rogse-menu-2" class="ui inverted fixed violet borderless menu" style="position:fixed;top:70px;overflow:hidden;z-index:+1;height:20px;">
+    	<div class="item" style="width:34.65%;"><div class="ui container center aligned"><h5>INFOS</h5></div></div>
+    	<div class="item" style="width:31.35%;"><div class="ui container center aligned"><h5>NARRATION</h5></div></div>
+    	<div class="item" style="width:  33%;"> <div class="ui container center aligned"><h5>EVENTS</h5></div></div>
+	</div>
+
+    <!-- END OF MENU -->
 
 	<router-outlet></router-outlet>
 
@@ -84,16 +86,24 @@ export class RootComponent implements OnInit {
   @HostListener('window:scroll', ['$event'])
   onScroll($event){
     this.scrollY = $event.target.scrollingElement.scrollTop;
-    if (this.scrollY > 300) 
+    if (this.scrollY > 400) 
 	{ 
-		var offset = (300 - this.scrollY) / 8 ;
+		var offset = (400 - this.scrollY) / 10 ;
 		this.menu_top = offset; 
 		let elem1 = document.getElementById("rogse-favicon");
 		let elem2 = document.getElementById("rogse-menu");
 		let elem3 = document.getElementById("rogse-menu-2");
+		let elem4 = document.getElementById("rogse-menu-3");
 		elem1.style.marginTop=this.menu_top+'px';
 		elem2.style.marginTop=this.menu_top+'px';
-		if (offset < -50) { elem3.style.marginTop = '-50px'; } else { elem3.style.marginTop = this.menu_top+'px'; }
+		if (offset < -70) { 
+			elem4.style.marginTop = '-70px'; 
+		} else { 
+			elem4.style.marginTop = this.menu_top+'px'; 
+			elem3.style.marginTop = this.menu_top+'px'; 
+		}
+		if (offset < -70 && offset > -120) { elem3.style.marginTop = (-70+(-70-this.menu_top))+'px'; }
+		if (offset < -120) { elem3.style.marginTop = '-20px'; }
 	}
 	else
 	{ 
@@ -101,9 +111,11 @@ export class RootComponent implements OnInit {
 		let elem1 = document.getElementById("rogse-favicon");
 		let elem2 = document.getElementById("rogse-menu");
 		let elem3 = document.getElementById("rogse-menu-2");
+		let elem4 = document.getElementById("rogse-menu-3");
 		elem1.style.marginTop=this.menu_top+'px';
 		elem2.style.marginTop=this.menu_top+'px';
 		elem3.style.marginTop=this.menu_top+'px';
+		elem4.style.marginTop=this.menu_top+'px';
 	}
 
   }
