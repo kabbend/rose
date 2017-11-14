@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActionReducer, Action, Store, State, combineReducers } from '@ngrx/store';
+import { ActionReducerMap, ActionReducer, Action, Store, State } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { Http, Headers, Response } from '@angular/http';
@@ -15,6 +15,11 @@ const HEADER = { headers: new Headers({ 'cache': 'false', 'Content-Type': 'appli
 /**
  ** ACTIONS
  **/
+
+// required by migration from @ngrx/store 2.0 to 4.x, where payload disappeared
+export interface RogseAction extends Action {
+  payload?: any;
+}
 
 export const DocActionTypes = {
 
@@ -40,7 +45,7 @@ export const DocActionTypes = {
  ** REDUCERS
  **/
 
-const documentReducer : ActionReducer<Document[]> = (state: Document[] = [] , action: Action) => {
+const documentReducer : ActionReducer<Document[]> = (state: Document[] = [] , action: RogseAction) => {
   switch (action.type) {
 
     case DocActionTypes.DOCUMENT_LOAD_ALL:
@@ -72,7 +77,7 @@ const documentReducer : ActionReducer<Document[]> = (state: Document[] = [] , ac
 }
 
 
-const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , action: Action) => {
+const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , action: RogseAction) => {
   switch (action.type) {
 
     case DocActionTypes.SECTION_CREATE:
@@ -97,7 +102,7 @@ const sectionReducer : ActionReducer<Section[]> = (state: Section[] = [] , actio
   }
 }
 
-const textReducer : ActionReducer<Text[]>  = (state: Text[] = [], action: Action) => {
+const textReducer : ActionReducer<Text[]>  = (state: Text[] = [], action: RogseAction) => {
 
   switch (action.type) {
 
@@ -136,10 +141,16 @@ const textReducer : ActionReducer<Text[]>  = (state: Text[] = [], action: Action
 
 }
 
-const reducers = {
+export const reducers : ActionReducerMap<AppStore> = {
   texts: textReducer,
   sections: sectionReducer,
   documents: documentReducer,
+};
+ 
+/*
+export const reducers: ActionReducerMap<State> = {
+  auth: fromAuth.reducer,
+  layout: fromLayout.reducer
 };
 
 const productionReducer = combineReducers(reducers);
@@ -147,6 +158,7 @@ const productionReducer = combineReducers(reducers);
 export function reducer(state: any, action: any) {
     return productionReducer(state, action);
 }
+*/
 
 /*
  * SERVICE

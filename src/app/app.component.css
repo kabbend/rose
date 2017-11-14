@@ -36,14 +36,12 @@
 
 .ui.transparent.input input {
 	font-family:FontAwesome,sans-serif;
-	font-weight: bold;
 	font-size:large;
 	color:white;
 }
 
 .ui.transparent.input input:focus {
 	font-family:FontAwesome,sans-serif;
-	font-weight: bold;
 	font-size:large;
 	color:white;
 }

@@ -16,7 +16,7 @@ import { DocumentListComponent } 	from './dl.component';
 import { CallbackComponent } 		from './callback.component';
 import { RoseTextarea } 		from './rose-textarea.directive';
 
-import { DocumentService, reducer } from './store/document.service';
+import { DocumentService, reducers } from './store/document.service';
  
 import { AuthService } from './auth.service';
 import { LoaderService } from './loader.service';
@@ -45,7 +45,7 @@ const appRoutes: Routes = [
     DragDropModule,
     MarkdownModule,
     HttpModule,
-    StoreModule.provideStore(reducer),
+    StoreModule.forRoot(reducers),
     RouterModule.forRoot(appRoutes),
   ],
   providers: [DocumentService, AuthService, LoaderService],
