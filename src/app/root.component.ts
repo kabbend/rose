@@ -25,9 +25,6 @@ import { LoaderService } from './loader.service';
 	<!-- DOCUMENT DROPDOWN -->
     	<div *ngIf="authService.isAuthenticated() && thereAreDocuments" class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
 
-	<!-- SECTIONS DROPDOWN -->
-    	<div *ngIf="authService.isAuthenticated() && thereAreSections" class="ui inverted item"> <section-dd (scroll)="scroll($event)"></section-dd> </div>
-
 	<!-- NEW DOC -->
         <div class="item" *ngIf="authService.isAuthenticated()"> <a class="ui primary button" (click)="newDoc()"><small>New Document</small></a> </div>
 
@@ -41,8 +38,12 @@ import { LoaderService } from './loader.service';
 
     <!-- LINE 2 -->
 
-	<div id="rogse-menu-3" class="ui inverted fixed blue menu" style="position:fixed;top:70px;overflow:hidden;z-index:+2;">
-    	  <div class="item" style="width:100%;height:20px;"> 
+	<div id="rogse-menu-3" class="ui inverted fixed blue borderless menu" style="position:fixed;top:70px;z-index:+2;">
+	  <!-- SECTIONS DROPDOWN -->
+    	  <div *ngIf="authService.isAuthenticated() && thereAreSections" class="ui inverted item"> 
+		<section-dd (scroll)="scroll($event)"></section-dd> 
+	  </div>
+    	  <div class="item" style="width:90%;height:20px;"> 
 		<div class="ui container center aligned" style="width:100%;" *ngIf="authService.isAuthenticated() && thereAreDocuments">
 		  <div class="ui transparent input" style="width:100%;">
                      <input style="text-align:center;" type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
@@ -54,9 +55,9 @@ import { LoaderService } from './loader.service';
     <!-- LINE 3 -->
 
 	<div id="rogse-menu-2" class="ui inverted fixed violet borderless menu" style="position:fixed;top:70px;overflow:hidden;z-index:+1;height:20px;">
-    	<div class="item" style="width:34.65%;"><div class="ui container center aligned"><h5>INFOS</h5></div></div>
-    	<div class="item" style="width:31.35%;"><div class="ui container center aligned"><h5>NARRATION</h5></div></div>
-    	<div class="item" style="width:  33%;"> <div class="ui container center aligned"><h5>EVENTS</h5></div></div>
+    	<div class="item" style="width:34.65%;"><div class="ui container center aligned">INFOS</div></div>
+    	<div class="item" style="width:31.35%;"><div class="ui container center aligned">NARRATION</div></div>
+    	<div class="item" style="width:  33%;"> <div class="ui container center aligned">EVENTS</div></div>
 	</div>
 
     <!-- END OF MENU -->
