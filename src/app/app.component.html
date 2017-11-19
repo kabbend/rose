@@ -7,8 +7,10 @@
   </div>
 </div>
 
-<h4 class="ui center aligned header" style="position:relative;top:200px;" *ngIf="!authService.isAuthenticated()">
-                <p>Please login to access to your documents<p>
+<h4 class="ui center aligned header" style="position:relative;top:110px;" *ngIf="!authService.isAuthenticated()">
+                <p style="font-family:FontAwesome,sans-serif;color:dimgrey;font-size:32px;text-align:center;">Welcome to ROGSE, Roleplaying Games adventure editor<p>
+		<p></p>
+                <p style="font-family:FontAwesome,sans-serif;color:dimgrey;font-size:16px;text-align:center;">Please login to access to your campaign<p>
                 <div><a class="ui primary button" (click)="login()">Log in</a></div>
 </h4>
 
@@ -30,7 +32,7 @@
           <div *ngIf="currentEdition==i && currentCol==0; then textareaId0 else markdownId0" > 
 	  </div>
           	<ng-template #textareaId0 > 
-		  <div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
+		  <div class="ui tiny label">{{("0000" + (i+1)).slice(-4)}}</div>
 		  <div class="five wide column">
         	  	<textarea rosetextarea class="rose-textarea" 
 			autosize (focusOnMe)="$event.focus()" 
@@ -40,7 +42,7 @@
 		  </div>
       		</ng-template>
       		<ng-template #markdownId0 > 
-		   <div class="ui tiny label" style="float:left;">{{("0000" + (i+1)).slice(-4)}}</div> 
+		   <div class="ui tiny label">{{("0000" + (i+1)).slice(-4)}}</div> 
 		   <div class="five wide column">
         		<markdown class="markdown"
         		[data]="line.text.line[0].content" pDraggable="a-text" pDroppable="a-text" (onDrop)="myDrop(line.text.line[0],$event)" 

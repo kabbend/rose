@@ -19,14 +19,16 @@ interface sectionOffset {
 @Component({
   selector: 'app-root',
   template: `
+        <img src="assets/background.jpg" style="top:0;left:0;height:100%;width:100%;margin:0;padding:0;border:0;position:fixed;" *ngIf="!authService.isAuthenticated()">
+	<span *ngIf="!authService.isAuthenticated()" 
+		style="font-family:FontAwesome,sans-serif;position:fixed;top:28px;left:85px;z-index:1000;color:white;font-size:24px;">ROGSE</span>
 
-	<span id="rogse-favicon" style="position:fixed;top:15px;left:15px;z-index:1000;" >
+	<span id="rogse-favicon" style="position:fixed;top:20px;left:15px;z-index:1000;" >
 	<img src="favicon.png" style="width:60px;height:60px;">
 	</span>
 
-    <!-- MENU -->
-
-	<div id="rogse-menu" class="ui small fixed inverted violet borderless menu" style="height:70px">
+    <!-- MENU LINE 1 -->
+	<div id="rogse-menu" class="ui fixed borderless inverted grey menu" style="height:70px;">
 
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
     	<div class="ui inverted item"> &nbsp;&nbsp; </div>
@@ -35,7 +37,7 @@ interface sectionOffset {
     	<div *ngIf="authService.isAuthenticated() && thereAreDocuments" class="ui inverted item"> <section-dl (docSelect)="selectDoc($event)"></section-dl> </div>
 
 	<!-- NEW DOC -->
-        <div class="item" *ngIf="authService.isAuthenticated()"> <a class="ui primary button" (click)="newDoc()"><small>New Document</small></a> </div>
+        <div class="item" *ngIf="authService.isAuthenticated()"> <a class="ui button" (click)="newDoc()"><small>New Document</small></a> </div>
 
     	<div class="right menu">
  	  <div class="item" *ngIf="authService.isAuthenticated()">Logged as {{authService.getUserEmail()}}</div>
@@ -47,30 +49,35 @@ interface sectionOffset {
 
     <!-- LINE 2 -->
 
-	<div id="rogse-menu-3" class="ui inverted fixed blue borderless menu" style="position:fixed;top:70px;z-index:+2;">
+	<div id="rogse-menu-3" class="ui fixed borderless menu" style="position:fixed;top:70px;z-index:+2;background-color:lightgrey;">
+
+    	  <div class="ui inverted item" style="width:3%;"></div>
+
 	  <!-- SECTIONS DROPDOWN -->
-    	  <div class="item" style="width:20%;height:15px;"> 
+    	  <div class="item" style="width:5%;height:15px;"> 
     	  <div *ngIf="authService.isAuthenticated() && thereAreSections" class="ui inverted item"> 
 		<section-dd (scroll)="scroll($event)"></section-dd> 
 	  </div>
 	  </div>
-    	  <div class="item" style="width:50%;height:15px;"> 
-		<div class="ui container center aligned" style="width:100%;" *ngIf="authService.isAuthenticated() && thereAreDocuments">
+
+    	  <div class="ui inverted item" style="width:8%;"></div>
+
+    	  <div class="item" style="width:48%;height:15px;"> 
+		<div class="ui container center aligned" *ngIf="authService.isAuthenticated() && thereAreDocuments">
 		  <div class="ui transparent input" style="width:100%;">
-                     <input style="text-align:center;" type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
+                     <input style="text-align:center;font-size:6;" type="text" [value]="docTitle" #menubox (keyup.enter)="updateTitle(menubox.value)">
          	  </div>
 		</div>
 	  </div>
-    	  <div class="item" style="width:25%;height:15px;"> 
-		<div class="ui container aligned" style="width:100%;font-size:90%;">
-		     {{secTitle}}
-		</div>
+    	  <div class="item" style="width:36%;height:15px;"> 
+		<div class="ui left container" style="font-size:5;"> {{secTitle}} </div>
 	  </div>
 	</div>
 
     <!-- LINE 3 -->
 
-	<div id="rogse-menu-2" class="ui inverted fixed violet borderless menu" style="position:fixed;top:70px;overflow:hidden;z-index:+1;height:20px;">
+	<div id="rogse-menu-2" class="ui fixed borderless inverted grey menu" 
+		style="position:fixed;top:65px;overflow:hidden;z-index:+1;height:20px;box-shadow: 0px 10px 8px 0px #9b9b9b;">
     	<div class="item" style="width:34.65%;"><div class="ui container center aligned">INFOS</div></div>
     	<div class="item" style="width:31.35%;"><div class="ui container center aligned">NARRATION</div></div>
     	<div class="item" style="width:  33%;"> <div class="ui container center aligned">EVENTS</div></div>
@@ -78,7 +85,11 @@ interface sectionOffset {
 
     <!-- END OF MENU -->
 
+	<div class="ui container" style="border:0;margin:0;padding:2px;width:100%;">
+
 	<router-outlet></router-outlet>
+
+	</div>
 
 	    `,
   styleUrls: ["../../node_modules/font-awesome/css/font-awesome.min.css",
@@ -167,7 +178,7 @@ export class RootComponent implements OnInit, AfterViewChecked {
 		       s.map( 
 				section => { let id = document.getElementById(section.starttextid);
 					     let y = 0;
-					     if (id) { y = id.getBoundingClientRect().top; console.log("top="+y);}
+					     if (id) { y = id.getBoundingClientRect().top + this.scrollY; console.log("top="+y);}
 					     this.sectionOffsets.push(	{ 
 							textid: section.starttextid, 
 							title: section.title,
@@ -195,7 +206,7 @@ export class RootComponent implements OnInit, AfterViewChecked {
 		  let textid = this.sectionOffsets[i].textid;
 		  let id =  document.getElementById(textid);
 		  if (!id) return; // DOM is not rendered yet, abort...
-		  this.sectionOffsets[i].offset = id.getBoundingClientRect().top; 
+		  this.sectionOffsets[i].offset = id.getBoundingClientRect().top + this.scrollY; 
 		}
 	}
   }
