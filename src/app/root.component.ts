@@ -19,7 +19,7 @@ interface sectionOffset {
 @Component({
   selector: 'app-root',
   template: `
-        <img src="assets/background.jpg" style="top:0;left:0;height:100%;width:100%;margin:0;padding:0;border:0;position:fixed;" *ngIf="!authService.isAuthenticated()">
+        <img src="assets/banner.jpg" style="bottom:400px;left:0;height:400px;width:100%;margin:0;padding:0;border:0;position:fixed;" *ngIf="!authService.isAuthenticated()">
 	<span *ngIf="!authService.isAuthenticated()" 
 		style="font-family:FontAwesome,sans-serif;position:fixed;top:28px;left:85px;z-index:1000;color:white;font-size:24px;">ROGSE</span>
 
@@ -77,10 +77,7 @@ interface sectionOffset {
     <!-- LINE 3 -->
 
 	<div id="rogse-menu-2" class="ui fixed borderless inverted grey menu" 
-		style="position:fixed;top:65px;overflow:hidden;z-index:+1;height:20px;box-shadow: 0px 10px 8px 0px #9b9b9b;">
-    	<div class="item" style="width:34.65%;"><div class="ui container center aligned">INFOS</div></div>
-    	<div class="item" style="width:31.35%;"><div class="ui container center aligned">NARRATION</div></div>
-    	<div class="item" style="width:  33%;"> <div class="ui container center aligned">EVENTS</div></div>
+	  style="position:fixed;top:25px;overflow:hidden;z-index:+1;height:10px;box-shadow: 0px 10px 8px 0px #9b9b9b;">
 	</div>
 
     <!-- END OF MENU -->
@@ -104,11 +101,13 @@ export class RootComponent implements OnInit, AfterViewChecked {
   thereAreSections: boolean = false;	// dynamically check if there are sections to show
   thereAreDocuments: boolean = false;	// dynamically check if there are documents to show
   docTitle: string = "loading...";	// store current document title
-  secTitle: string = '';
   docId: string = "0";			// store current document id
   scrollY: number = 0;			// store current page scroll in px
-  menu_top: number = 0;			// menu offset (in pixels) from top-of-page, when user scrolls
-  sectionOffsets: sectionOffset[] = [];  // offset of each (sorted) section, so we know in which section we are depending on scroll
+  menu_top: number = 0;			// menu offset (in pixels) from top-of-page, when user scrolls. This is a null of negative number,
+					// ie. the more the user scrolls, the more the menu is disappearing outside of the page 
+  menu_size: number = 70+45;		// actual size (in pixels) of the top menu, decreasing when user scrolls 
+  sectionOffsets: sectionOffset[] = [];	// offset of each section, so we know in which section we are depending on scrolling within the page 
+  secTitle: string = '';		// current section title, depending on above scrolling and section offsets
  
   //
   // detect and store page scroll, move menus accordingly
@@ -116,20 +115,27 @@ export class RootComponent implements OnInit, AfterViewChecked {
   @HostListener('window:scroll', ['$event'])
   onScroll($event){
 
-    // get current scroll offset
+    // get current scrolling offset
     this.scrollY = $event.target.scrollingElement.scrollTop;
 
-    // find 1st section with this offset 
+    // find 1st section with this offset, this will become the current section to display along with the document title
     this.secTitle = ''; 
     for(let i=0;i<this.sectionOffsets.length;i++) {
-	if (this.sectionOffsets[i].offset <= this.scrollY) { this.secTitle = this.sectionOffsets[i].title; }
+	if (this.sectionOffsets[i].offset <= this.scrollY - (115-this.menu_size)) { this.secTitle = this.sectionOffsets[i].title; }
 	else break;	
     }
 
+    // nothing happens to the menu until a given arbitrary scrolling position 
     if (this.scrollY > 400) 
 	{ 
+		// compute actual menu offset in pixels, depending on scroll
 		var offset = (400 - this.scrollY) / 10 ;
 		this.menu_top = offset; 
+
+ 		// actual menu size is decreasing until a given limit
+		this.menu_size = 70 + 45 + Math.max(offset,-70);
+console.log("menu size:"+this.menu_size);
+		// move menus
 		let elem1 = document.getElementById("rogse-favicon");
 		let elem2 = document.getElementById("rogse-menu");
 		let elem3 = document.getElementById("rogse-menu-2");
@@ -148,6 +154,7 @@ export class RootComponent implements OnInit, AfterViewChecked {
 	else
 	{ 
 		this.menu_top = 0; 
+		this.menu_size = 70+45;
 		let elem1 = document.getElementById("rogse-favicon");
 		let elem2 = document.getElementById("rogse-menu");
 		let elem3 = document.getElementById("rogse-menu-2");
@@ -252,7 +259,7 @@ export class RootComponent implements OnInit, AfterViewChecked {
   //
   scroll(id: string) {
         let elem = document.getElementById(id)
-	if (elem) { elem.scrollIntoView(); window.scrollBy(0,-110); }
+	if (elem) { elem.scrollIntoView(); window.scrollBy(0,-this.menu_size); }
   }
 
   //
@@ -269,6 +276,7 @@ export class RootComponent implements OnInit, AfterViewChecked {
     // reset section name
     this.secTitle = '';
     this.sectionOffsets = [];
+    this.menu_size = 70+45;
 
     // set selected doc in the store, for all other components
     this.documentService.setDefaultDoc(docId);

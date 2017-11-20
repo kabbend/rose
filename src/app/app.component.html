@@ -7,14 +7,14 @@
   </div>
 </div>
 
-<h4 class="ui center aligned header" style="position:relative;top:110px;" *ngIf="!authService.isAuthenticated()">
-                <p style="font-family:FontAwesome,sans-serif;color:dimgrey;font-size:32px;text-align:center;">Welcome to ROGSE, Roleplaying Games adventure editor<p>
+<h4 class="ui center aligned header" style="position:relative;top:130px;" *ngIf="!authService.isAuthenticated()">
+                <p style="font-family:FontAwesome,sans-serif;color:white;font-size:32px;text-align:center;">Welcome to ROGSE, Roleplaying Games adventure editor<p>
 		<p></p>
-                <p style="font-family:FontAwesome,sans-serif;color:dimgrey;font-size:16px;text-align:center;">Please login to access to your campaign<p>
+                <p style="font-family:FontAwesome,sans-serif;color:white;font-size:16px;text-align:center;">Please login to access to your campaign<p>
                 <div><a class="ui primary button" (click)="login()">Log in</a></div>
 </h4>
 
-<div *ngIf="authService.isAuthenticated()" class="ui divided list" style="position:relative;top:130px;">
+<div *ngIf="authService.isAuthenticated()" class="ui divided list" style="position:relative;top:100px;">
  <!-- LIST OF ROWS -->          
  <div class="item" *ngFor="let line of lines$ | async; let i = index">
 	<!-- SECTION -->
