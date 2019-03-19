@@ -41,6 +41,102 @@ function handleError(res, reason, message, code) {
 //
 
 //
+// API FOR MOBILE RPGCHAT
+//
+// GET  /api/session	 	return active session if any, or an error otherwise
+// POST /api/session		create a new session (and delete any active one)	
+// DELETE /api/session		delete any session
+//
+
+app.get("/api/session", function(req, res) {
+
+  const results = [];
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    const query = client.query('SELECT * FROM session;');
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    query.on('end', () => {
+      done();
+      if (results.length != 1) {
+        return res.status(403).json({success: false, err: 'no active session'});
+      } else {
+        return res.json(results);
+      }
+    });
+  });
+});
+
+app.delete("/api/session", function(req, res) {
+
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+    const query = client.query('DELETE FROM session;');
+    query.on('end', () => {
+      done();
+        return res.status(200).json({success: true});
+    });
+  });
+});
+
+app.post("/api/session", function(req, res) {
+
+  var newSession = req.body;
+  
+  console.log("key="+newSession.key);
+  console.log("ip="+newSession.ip);
+
+  pg.connect(process.env.DATABASE_URL, (err, client, done) => {
+    if(err) {
+      done(); console.log(err);
+      return res.status(500).json({success: false, data: err});
+    }
+
+    // check license
+    const results = [];
+    console.log("SELECT * FROM licenses WHERE key = '"+newSession.key+"';");
+    const query = client.query("SELECT * FROM licenses WHERE key = ($1);", [newSession.key]);
+    query.on('row', (row) => {
+      results.push(row);
+    });
+    query.on('end', () => {
+      // check result
+      if (results.length != 1) {
+        done();
+	console.log("invalid license key");
+      	return res.status(403).json({success: false, err: 'invalid license key'});
+      } else {
+        // insert new session	
+      console.log("found valid license");
+      const tx = new Transaction(client);
+      tx.begin();
+      const q1 = 'DELETE FROM session;';
+      tx.query(q1);
+      const q2 = "INSERT INTO session (created,ip,status) VALUES (CURRENT_TIMESTAMP,($1),'active');";
+      tx.query(q2,[newSession.ip]);
+      tx.commit();
+      done();
+      return res.status(200).json({success: true});
+	}
+      });
+    });
+
+});
+
+
+
+//
+// API FOR ROGSE
+//
+
+//
 // GET  /api/doc/:docId/texts		return all texts of the given document
 // POST /api/doc/:docId/texts		insert a new text
 // PUT  /api/doc/:docId/texts/:id	update text (with content)
