@@ -12,7 +12,7 @@ export class AuthService {
     clientID: 'RK_5QAIJzv5nS25JhsQW2yU60RIvEW4u',
     domain: 'rose61488.eu.auth0.com',
     responseType: 'token id_token',
-    audience: 'https://rose61488.eu.auth0.co/userinfo',
+    audience: 'https://rose61488.eu.auth0.com/userinfo',
     redirectUri: environment.CALLBACK_URL,      
     scope: 'openid email'
   });
