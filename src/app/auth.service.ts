@@ -9,10 +9,10 @@ import { environment } from '../environments/environment';
 export class AuthService {
 
   auth0 = new auth0.WebAuth({
-    clientID: 'g0uqusr4SflHbaLG2APulX7113zM7ugu',
+    clientID: 'RK_5QAIJzv5nS25JhsQW2yU60RIvEW4u',
     domain: 'rose61488.eu.auth0.com',
     responseType: 'token id_token',
-    audience: 'https://fast-atoll-61488.auth0.com/userinfo',
+    audience: 'https://rose61488.eu.auth0.co/userinfo',
     redirectUri: environment.CALLBACK_URL,      
     scope: 'openid email'
   });
