@@ -9,8 +9,8 @@ import { environment } from '../environments/environment';
 export class AuthService {
 
   auth0 = new auth0.WebAuth({
-    clientID: 'iUq88ocmRv47MItEKy6WLdUQdyNZ0_93',
-    domain: 'fast-atoll-61488.auth0.com',
+    clientID: 'g0uqusr4SflHbaLG2APulX7113zM7ugu',
+    domain: 'rose61488.eu.auth0.com',
     responseType: 'token id_token',
     audience: 'https://fast-atoll-61488.auth0.com/userinfo',
     redirectUri: environment.CALLBACK_URL,      
